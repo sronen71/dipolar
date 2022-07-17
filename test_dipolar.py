@@ -161,7 +161,7 @@ def test_energy():
             scattering_energy,
             dipolar_energy,
             lhy_energy,
-        ) = dbec.energy(torch.as_tensor(psi1), return_all=True)
+        ) = dbec.calculate_energy(torch.as_tensor(psi1), return_all=True)
 
         (
             analytic_kinetic_energy,

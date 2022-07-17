@@ -1,12 +1,10 @@
 import logging
-import time
 
 import numpy as np
 import torch
 from numpy.fft import fftfreq
+from torch.optim import LBFGS
 from tqdm import trange
-
-import lbfgs
 
 if torch.cuda.is_available:
     torch.set_default_tensor_type(torch.cuda.DoubleTensor)
@@ -123,11 +121,11 @@ class DBEC:
             self.edd = 0
         else:
             self.edd = dipole_length / scattering_length
-        self.potential_grid = torch.as_tensor(potential(grid.x, grid.y, grid.z))
-        self.omegas = potential.omegas
+        self.potential = potential
+        self.potential_grid = None  # update in optimize
         self.grid = grid
         self.Bcutoff = Bcutoff
-        self.vdk, self.k2 = self._make_operators()
+        self.vdk, self.k2 = self._make_kspace_operators()
         self.glhy = (
             32
             / 3
@@ -137,7 +135,7 @@ class DBEC:
             * (1 + 3 / 2 * self.edd**2)
         )
 
-    def _make_operators(self):
+    def _make_kspace_operators(self):
         """
         return dipole insteraction operator vdk and kinetic energy operator k2, in momentum space.
         """
@@ -147,8 +145,19 @@ class DBEC:
         xq = self.Bcutoff * np.sqrt(k2)
         spherical_cut = 1 + 3 * (xq * np.cos(xq) - np.sin(xq)) / xq**3
         vdk *= spherical_cut
-        vdk[k2 == 0] = 0
-        return torch.as_tensor(vdk), torch.as_tensor(k2)
+        vdk[0, 0, 0] = 0
+
+        if k2.shape[0] // 2 == 0:  # for even size need double weight for highest positive frequency
+            k2[k2.shape[0] // 2, :, :] *= 2
+        if k2.shape[1] // 2 == 0:
+            k2[:, k2.shape[1] // 2, :] *= 2
+        if k2.shape[2] // 2 == 0:
+            k2[:, :, k2.shape[2] // 2] *= 2
+
+        return (
+            torch.as_tensor(vdk),
+            torch.as_tensor(k2),
+        )
 
     def normalize(self, psi):
         dvol = self.grid.dx * self.grid.dy * self.grid.dz
@@ -163,13 +172,13 @@ class DBEC:
 
         Return: energy per atom, in hbar*omega_x units
         """
-        # t0 = time.time()
         psi_norm = self.normalize(psi)
         psi2 = torch.abs(psi_norm) ** 2
         dvol = self.grid.dx * self.grid.dy * self.grid.dz
         kinetic_energy = (
             torch.sum(self.k2 / 2 * torch.abs(torch.fft.fftn(psi_norm, norm="ortho")) ** 2) * dvol
         )
+
         potential_energy = torch.sum(self.potential_grid * psi2) * dvol
         if self.scattering_length == 0:
             scattering_energy = 0
@@ -182,12 +191,14 @@ class DBEC:
             dipolar_energy = (
                 self.num_atoms
                 * 0.5
-                * (torch.sum(self.vdk * torch.abs(torch.fft.fftn(psi2, norm="ortho") ** 2)))
+                * (torch.sum(self.vdk * torch.abs(torch.fft.fftn(psi2, norm="ortho")) ** 2))
                 * dvol
             )
+
             lhy_energy = (
                 self.num_atoms ** (3 / 2) * (2 / 5) * self.glhy * torch.sum(psi2 ** (5 / 2)) * dvol
             )
+
         energy = kinetic_energy + potential_energy + scattering_energy + dipolar_energy + lhy_energy
         if return_all:
             return (
@@ -203,13 +214,12 @@ class DBEC:
 
     def optimize(self, psi):
 
+        self.potential_grid = torch.as_tensor(self.potential(self.grid.x, self.grid.y, self.grid.z))
         psi = torch.as_tensor(psi)  # dtype=torch.complex128)
         psi = self.normalize(psi)
         energy0 = self.calculate_energy(psi).detach().cpu().numpy()
-        print("Initial energy", energy0)
-
         psi.requires_grad_()
-        optimizer = lbfgs.LBFGS([psi], history_size=15, max_iter=40, line_search_fn="strong_wolfe")
+        optimizer = LBFGS([psi], history_size=15, max_iter=50, line_search_fn="strong_wolfe")
         calls = 0
         iterations = 50
         min_energy = energy0
@@ -264,5 +274,5 @@ class Grid:
         self.ky = ky
 
         kz = 2 * np.pi * fftfreq(nz) / self.dz
-        kz = kz.reshape(1, 1, nz)
+        kz = kz.reshape(1, 1, -1)
         self.kz = kz
