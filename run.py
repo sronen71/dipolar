@@ -1,4 +1,5 @@
 import logging
+import os
 import pickle
 import warnings
 
@@ -8,18 +9,22 @@ import torch
 import constants
 import dipolar
 from perlin_noise import perlin_noise
-from visualize import plot_contour, plot_table
+from visualize import plot_table
 
-warnings.filterwarnings("ignore")
+# warnings.filterwarnings("ignore")
 
 
 def main():
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
-        handlers=[logging.FileHandler("log.log"), logging.StreamHandler()],
+        handlers=[logging.FileHandler("logs/log.log"), logging.StreamHandler()],
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+
+    os.makedirs("figs", exist_ok=True)
+    os.makedirs("results", exist_ok=True)
+    os.makedirs("logs", exist_ok=True)
 
     mass = 162 * constants.dalton  # 162Dy mass in kg
     omega_x = 2 * np.pi * 125  # Trap radial frequency, in rad/s
@@ -41,7 +46,7 @@ def main():
         lattice_shift=[0.0, 0.0],
     )
     nx = 128
-    nz = 64
+    nz = 96
     limx = 12  # [aho]
     limz = 12  # [aho]
     Bcutoff = 12  # [aho]
@@ -59,14 +64,23 @@ def main():
     # gpotential = potential_func.lattice(grid.x, grid.y)
     # plot_contour(grid.x1, grid.y1, gpotential)
 
+    precision = "float64"  # change that to get x5 speed on newer nvidia GPUs,
+    # at slight cost of precision (relative energy error ~1e-6)
+
     dbec = dipolar.DBEC(
-        scattering_length / aho, dipole_length / aho, num_atoms, potential, grid, Bcutoff
+        scattering_length / aho,
+        dipole_length / aho,
+        num_atoms,
+        potential,
+        grid,
+        Bcutoff,
+        precision=precision,
     )
     sigmas = np.array([2, 2, 2]) / np.sqrt(2)
     torch.manual_seed(1)
-    num_spacings = 5
+    num_spacings = 6
     num_depths = 5
-    lattice_spacings = np.linspace(0.4, 2, num_spacings) * 1e-6 / aho  # convert [1e-6 m] -> [aho]
+    lattice_spacings = np.linspace(0.4, 2.4, num_spacings) * 1e-6 / aho  # convert [1e-6 m] -> [aho]
     lattice_depths = np.linspace(0.4, 4.0, num_depths)  # [hbar omega]
     wavefunctions = np.empty((num_spacings, num_depths) + (nx, nx, nz))
     energies = np.empty((num_spacings, num_depths))
@@ -74,10 +88,11 @@ def main():
         for i, lat_spacing in enumerate(lattice_spacings):
             for j, lat_depth in enumerate(lattice_depths):
                 logging.info(
-                    f"{lattice_type} [{i},{j}]: depth {lat_depth:1.2f}, spacings {lat_spacing:1.2f}",
+                    f"{lattice_type} [{i},{j}]: depth {lat_depth:1.2f} "
+                    f"spacings {lat_spacing:1.2f}",
                 )
                 if lat_depth == 0 and j > 0:
-                    results[i, j, :, :, :] = results[0, 0, :, :, :]
+                    wavefunctions[i, j, :, :, :] = wavefunctions[0, 0, :, :, :]
                 else:
                     potential.lattice_depth = lat_depth
                     potential.lattice_constant = lat_spacing
@@ -90,11 +105,8 @@ def main():
                     # plot_contour(grid.x1, grid.y1, abs(psi_opt[:, :, mid]))
                     energies[i, j] = energy
                     wavefunctions[i, j, :, :, :] = psi_opt
-                    logging.info(
-                        f"Energy {energy:.8f}",
-                    )
         results = {"wavefunctions": wavefunctions, "energies": energies}
-        pickle.dump(results, open("results.pkl", "wb"))
+        pickle.dump(results, open("results/results.pkl", "wb"))
         plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx)
 
 

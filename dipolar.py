@@ -7,7 +7,7 @@ from torch.optim import LBFGS
 from tqdm import trange
 
 if torch.cuda.is_available:
-    torch.set_default_tensor_type(torch.cuda.DoubleTensor)
+    torch.set_default_tensor_type(torch.cuda.FloatTensor)
 
 
 class Potential:
@@ -99,7 +99,16 @@ def gaussian_psi(grid, sigmas):
 
 
 class DBEC:
-    def __init__(self, scattering_length, dipole_length, num_atoms, potential, grid, Bcutoff):
+    def __init__(
+        self,
+        scattering_length,
+        dipole_length,
+        num_atoms,
+        potential,
+        grid,
+        Bcutoff,
+        precision="float64",
+    ):
         """
         Dipolar BEC
         Units are scaled: hbar=mass=omega_x=0
@@ -112,6 +121,11 @@ class DBEC:
         grid: grid object [aho]
         Bcutoff: cutoff for dipolar interaction [aho]
         """
+        if precision == "float32":
+            self.precision = torch.float32
+        else:
+            self.precision = torch.float64
+
         self.scattering_length = scattering_length
         self.num_atoms = num_atoms
         self.g = 4 * np.pi * scattering_length
@@ -120,18 +134,18 @@ class DBEC:
         if scattering_length == 0 and dipole_length == 0:
             self.edd = 0
         else:
-            self.edd = dipole_length / scattering_length
+            self.edd = self.dipole_length / self.scattering_length
         self.potential = potential
         self.potential_grid = None  # update in optimize
         self.grid = grid
         self.Bcutoff = Bcutoff
-        self.vdk, self.k2 = self._make_kspace_operators()
+        self.k2, self.vdk = self._make_kspace_operators()
         self.glhy = (
             32
             / 3
             / np.sqrt(np.pi)
             * self.g
-            * np.power(scattering_length, 3 / 2)
+            * scattering_length ** (3 / 2)
             * (1 + 3 / 2 * self.edd**2)
         )
 
@@ -155,8 +169,8 @@ class DBEC:
             k2[:, :, k2.shape[2] // 2] *= 2
 
         return (
-            torch.as_tensor(vdk),
-            torch.as_tensor(k2),
+            torch.as_tensor(k2, dtype=self.precision),
+            torch.as_tensor(vdk, dtype=self.precision),
         )
 
     def normalize(self, psi):
@@ -214,15 +228,17 @@ class DBEC:
 
     def optimize(self, psi):
 
-        self.potential_grid = torch.as_tensor(self.potential(self.grid.x, self.grid.y, self.grid.z))
-        psi = torch.as_tensor(psi)  # dtype=torch.complex128)
+        self.potential_grid = torch.as_tensor(
+            self.potential(self.grid.x, self.grid.y, self.grid.z), dtype=self.precision
+        )
+        self.k2, self.vdk = self._make_kspace_operators()
+        psi = torch.as_tensor(psi, dtype=self.precision)
         psi = self.normalize(psi)
-        energy0 = self.calculate_energy(psi).detach().cpu().numpy()
+        min_energy = self.calculate_energy(psi).item()
         psi.requires_grad_()
         optimizer = LBFGS([psi], history_size=15, max_iter=50, line_search_fn="strong_wolfe")
         calls = 0
         iterations = 50
-        min_energy = energy0
         with trange(iterations) as pbar:
             for i in pbar:
 
@@ -230,21 +246,23 @@ class DBEC:
                     nonlocal calls
                     calls += 1
                     optimizer.zero_grad()
-                    energy = self.calculate_energy(psi)
-                    energy.backward()
-                    return energy
+                    energy1 = self.calculate_energy(psi)
+                    energy1.backward()
+                    return energy1
 
                 optimizer.step(closure)
-                energy = self.calculate_energy(psi).detach().cpu().numpy()
+                # with torch.no_grad():
 
+                energy = self.calculate_energy(psi).item()
                 diff = energy - min_energy
-                pbar.set_description(
-                    f"Iteration {i} Calls {calls} Energy {energy:.8f} diff {diff:.1e}"
-                )
+
+                if energy < min_energy:
+                    min_energy = energy
+                iterations_info = f"Iteration {i} Calls {calls} Energy {energy:.8f} diff {diff:.1e}"
+                pbar.set_description(iterations_info)
+                logging.info(iterations_info)
                 if abs(diff) < 1e-8:
                     break
-                elif energy < min_energy:
-                    min_energy = energy
         psi_opt = self.normalize(torch.abs(psi))
         energy = self.calculate_energy(psi).detach().cpu().numpy()
         psi_opt = psi_opt.detach().cpu().numpy()

@@ -16,10 +16,10 @@ def plot_contour(x, y, v):
 def plot_image(ax, xmin, xmax, out, aho, limx):
     unit = 2 * limx * aho * 1e6 / out.shape[0]
     mid_z = out.shape[2] // 2
+    width = xmax - xmin
     ax.imshow(
         abs(out[xmin:xmax, xmin:xmax, mid_z]) ** 2,
-        extent=np.array([xmin, xmax, xmin, xmax]) * unit,
-        # extent=[0, 1, 0, 1],
+        extent=np.array([0, width, 0, width]) * unit,
     )
 
 
@@ -52,4 +52,4 @@ def plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_typ
                 ax.tick_params(axis="x", labelsize=50)
             else:
                 ax.set_xticks([])
-    plt.savefig(f"phase_dia_{lattice_type}_lat", bbox_inches="tight")
+    plt.savefig(f"figs/phase_dia_{lattice_type}_lat", bbox_inches="tight")
