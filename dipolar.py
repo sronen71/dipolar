@@ -136,8 +136,10 @@ class DBEC:
         else:
             self.edd = self.dipole_length / self.scattering_length
         self.potential = potential
-        self.potential_grid = None  # update in optimize
         self.grid = grid
+        self.potential_grid = torch.as_tensor(
+            self.potential(self.grid.x, self.grid.y, self.grid.z), dtype=self.precision
+        )  # also update in optimize if potential changed
         self.Bcutoff = Bcutoff
         self.k2, self.vdk = self._make_kspace_operators()
         self.glhy = (
@@ -161,12 +163,13 @@ class DBEC:
         vdk *= spherical_cut
         vdk[0, 0, 0] = 0
 
-        if k2.shape[0] // 2 == 0:  # for even size need double weight for highest positive frequency
-            k2[k2.shape[0] // 2, :, :] *= 2
-        if k2.shape[1] // 2 == 0:
-            k2[:, k2.shape[1] // 2, :] *= 2
-        if k2.shape[2] // 2 == 0:
-            k2[:, :, k2.shape[2] // 2] *= 2
+        # Disable this weighting for now, it breaks Parseval's theorem (unitarity of fourier transform):
+        # if k2.shape[0] // 2 == 0:  # for even size need double weight for highest positive frequency
+        #    k2[k2.shape[0] // 2, :, :] *= 2
+        # if k2.shape[1] // 2 == 0:
+        #    k2[:, k2.shape[1] // 2, :] *= 2
+        # if k2.shape[2] // 2 == 0:
+        #    k2[:, :, k2.shape[2] // 2] *= 2
 
         return (
             torch.as_tensor(k2, dtype=self.precision),

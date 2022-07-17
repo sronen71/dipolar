@@ -35,7 +35,7 @@ def analytic_energies(dbec, sigmas):
     """
 
     kinetic_energy = 1 / 8 * np.sum((1 / sigmas) ** 2)
-    potential_energy = 1 / 2 * np.sum((sigmas) ** 2 * dbec.omegas**2)
+    potential_energy = 1 / 2 * np.sum((sigmas) ** 2 * dbec.potential.omegas**2)
     scattering_energy = (
         dbec.num_atoms * dbec.scattering_length / (4 * np.sqrt(np.pi) * np.prod(sigmas))
     )
@@ -172,7 +172,7 @@ def test_energy():
         ) = analytic_energies(dbec, sigmas)
 
         # print("ED", dipolar_energy, analytic_dipolar_energy)
-        err = 1e-5
+        err = 1e-6
         assert abs(kinetic_energy / analytic_kinetic_energy - 1) < err
         assert abs(potential_energy / analytic_potential_energy - 1) < err
         assert abs(scattering_energy / analytic_scattering_energy - 1) < err
