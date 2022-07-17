@@ -298,3 +298,9 @@ class Grid:
         kz = 2 * np.pi * fftfreq(nz) / self.dz
         kz = kz.reshape(1, 1, -1)
         self.kz = kz
+        self.nx = nx
+        self.ny = ny
+        self.nz = nz
+        self.limx = limx
+        self.limy = limy
+        self.limz = limz

@@ -46,27 +46,29 @@ def scan(dbec, aho):
                     wavefunctions[i, j, :, :, :] = psi_opt
         results = {"wavefunctions": wavefunctions, "energies": energies}
         pickle.dump(results, open("results/results.pkl", "wb"))
+        limx = dbec.grid.limx
         plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx)
 
 
 def main():
     torch.manual_seed(1)
+    os.makedirs("figs", exist_ok=True)
+    os.makedirs("results", exist_ok=True)
+    os.makedirs("logs", exist_ok=True)
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s [%(levelname)s] %(message)s",
         handlers=[logging.FileHandler("logs/log.log"), logging.StreamHandler()],
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-    os.makedirs("figs", exist_ok=True)
-    os.makedirs("results", exist_ok=True)
-    os.makedirs("logs", exist_ok=True)
+
     mass = 162 * constants.dalton  # 162Dy mass in kg
     omega_x = 2 * np.pi * 125  # Trap radial frequency, in rad/s
     aho = np.sqrt(constants.hbar / mass / omega_x)  # oscillator length in meters
     omegas = np.array([1, 1, 2])  # trap frequencies in units of omega_x
     num_atoms = 100 * 1e3  # Number of atoms
-    scattering_length = 5 * constants.a0  # 85
-    dipole_length = 0  # 131 * constants.a0
+    scattering_length = 85 * constants.a0  #
+    dipole_length = 131 * constants.a0
     lattice_constant = 1  # in units of aho
     lattice_depth = 0  # in units of hbar*omegar_r
     lattice_type = None
@@ -96,7 +98,7 @@ def main():
     # gpotential = potential_func.lattice(grid.x, grid.y)
     # plot_contour(grid.x1, grid.y1, gpotential)
 
-    precision = "float32"
+    precision = "float64"
     # "float64"for full precision
     # "float32" to get x5 speed on newer nvidia GPUs,
     # at slight cost of precision (relative energy error ~1e-6)
@@ -110,7 +112,9 @@ def main():
         Bcutoff,
         precision=precision,
     )
-    # scan(dbec, aho)
+
+    scan(dbec, aho)  # Uncomment this to create subplot tables
+
     sigmas = np.array([2, 2, 2]) / np.sqrt(2)
     noise = perlin_noise(nx, nx, nz, scale=8)  # make sure nx,nz are divisable by scale
     psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.2 * noise)
