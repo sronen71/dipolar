@@ -1,7 +1,6 @@
 import logging
 import os
 import pickle
-import warnings
 
 import numpy as np
 import torch
@@ -10,8 +9,6 @@ import constants
 import dipolar
 from perlin_noise import perlin_noise
 from visualize import plot_table
-
-# warnings.filterwarnings("ignore")
 
 
 def main():

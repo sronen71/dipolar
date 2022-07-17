@@ -236,7 +236,7 @@ class DBEC:
         psi = self.normalize(psi)
         min_energy = self.calculate_energy(psi).item()
         psi.requires_grad_()
-        optimizer = LBFGS([psi], history_size=15, max_iter=50, line_search_fn="strong_wolfe")
+        optimizer = LBFGS([psi], history_size=15, max_iter=100, line_search_fn="strong_wolfe")
         calls = 0
         iterations = 50
         with trange(iterations) as pbar:
@@ -260,9 +260,10 @@ class DBEC:
                     min_energy = energy
                 iterations_info = f"Iteration {i} Calls {calls} Energy {energy:.8f} diff {diff:.1e}"
                 pbar.set_description(iterations_info)
-                logging.info(iterations_info)
                 if abs(diff) < 1e-8:
                     break
+        logging.info(iterations_info)
+
         psi_opt = self.normalize(torch.abs(psi))
         energy = self.calculate_energy(psi).detach().cpu().numpy()
         psi_opt = psi_opt.detach().cpu().numpy()
