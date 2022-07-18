@@ -163,8 +163,10 @@ class DBEC:
         vdk *= spherical_cut
         vdk[0, 0, 0] = 0
 
-        # Disable this weighting for now, it breaks Parseval's theorem (unitarity of fourier transform):
-        # if k2.shape[0] // 2 == 0:  # for even size need double weight for highest positive frequency
+        # Disable this weighting for now, it breaks Parseval's theorem
+        #  (unitarity of fourier transform):
+        # if k2.shape[0] // 2 == 0:  # for even size need double weight
+        # for highest positive frequency
         #    k2[k2.shape[0] // 2, :, :] *= 2
         # if k2.shape[1] // 2 == 0:
         #    k2[:, k2.shape[1] // 2, :] *= 2
