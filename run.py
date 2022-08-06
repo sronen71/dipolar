@@ -8,16 +8,16 @@ import torch
 import constants
 import dipolar
 from perlin_noise import perlin_noise
-from visualize import plot_table
+from visualize import plot_one, plot_table
 
 
 def scan(dbec, aho):
     sigmas = np.array([2, 2, 2]) / np.sqrt(2)
 
-    num_spacings = 6
-    num_depths = 5
+    num_spacings = 6  #
+    num_depths = 5  #
     lattice_spacings = np.linspace(0.4, 2.4, num_spacings) * 1e-6 / aho  # convert [1e-6 m] -> [aho]
-    lattice_depths = np.linspace(0.4, 4.0, num_depths)  # [hbar omega]
+    lattice_depths = np.linspace(0.1, 4.0, num_depths)  # [hbar omega]
     nx = dbec.grid.nx
     nz = dbec.grid.nz
 
@@ -39,15 +39,20 @@ def scan(dbec, aho):
                     noise = perlin_noise(
                         nx, nx, nz, scale=8
                     )  # make sure nx,nz are divisable by scale
-                    psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.2 * noise)
+                    # noise = np.random.rand(nx, nx, nz)
+                    psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
                     energy, psi_opt = dbec.optimize(psi1)
-                    # plot_contour(grid.x1, grid.y1, abs(psi_opt[:, :, mid]))
                     energies[i, j] = energy
                     wavefunctions[i, j, :, :, :] = psi_opt
         results = {"wavefunctions": wavefunctions, "energies": energies}
-        pickle.dump(results, open("results/results.pkl", "wb"))
+        tag = (
+            f"s{dbec.scattering_length*aho/constants.a0:3.1f}_"
+            f"d{dbec.dipole_length*aho/constants.a0:3.1f}_"
+            f"n{int(dbec.num_atoms):d}"
+        )
+        pickle.dump(results, open(f"results/results_{tag}.pkl", "wb"))
         limx = dbec.grid.limx
-        plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx)
+        plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx, tag)
 
 
 def main():
@@ -65,10 +70,11 @@ def main():
     mass = 162 * constants.dalton  # 162Dy mass in kg
     omega_x = 2 * np.pi * 125  # Trap radial frequency, in rad/s
     aho = np.sqrt(constants.hbar / mass / omega_x)  # oscillator length in meters
-    omegas = np.array([1, 1, 2])  # trap frequencies in units of omega_x
-    num_atoms = 100 * 1e3  # Number of atoms
-    scattering_length = 85 * constants.a0  #
-    dipole_length = 131 * constants.a0
+    omegas = np.array([1.0, 1.0, 2.0])  # trap frequencies in units of omega_x
+    num_atoms = 10 * 1e3  # Number of atoms 100
+    scattering_length = 85 * constants.a0
+    dipole_length = 0 * 131 * constants.a0
+
     lattice_constant = 1  # in units of aho
     lattice_depth = 0  # in units of hbar*omegar_r
     lattice_type = None
@@ -79,8 +85,8 @@ def main():
         lattice_type,
         lattice_shift=[0.0, 0.0],
     )
-    nx = 128
-    nz = 96
+    nx = 128  #
+    nz = 64
     limx = 12  # [aho]
     limz = 12  # [aho]
     Bcutoff = 12  # [aho]
@@ -90,15 +96,14 @@ def main():
         f"omegas {omegas[0]} {omegas[1]} {omegas[2]}"
     )
     logging.info(
-        f"mass {mass/constants.dalton} scattering_length {scattering_length/constants.a0} "
-        f"dipole_length {dipole_length/constants.a0}  "
+        f"mass {(mass/constants.dalton):.2f} "
+        f"scattering_length {(scattering_length/constants.a0):.2f} "
+        f"dipole_length {(dipole_length/constants.a0):.2f}  "
     )
     logging.info(f"nx {nx} nz {nz} limx {limx} limz {limz} Bcutoff {Bcutoff}")
     grid = dipolar.Grid(nx, nx, nz, limx, limx, limz)
-    # gpotential = potential_func.lattice(grid.x, grid.y)
-    # plot_contour(grid.x1, grid.y1, gpotential)
 
-    precision = "float64"
+    precision = "float32"
     # "float64"for full precision
     # "float32" to get x5 speed on newer nvidia GPUs,
     # at slight cost of precision (relative energy error ~1e-6)
@@ -113,13 +118,25 @@ def main():
         precision=precision,
     )
 
-    scan(dbec, aho)  # Uncomment this to create subplot tables
+    # scan(dbec, aho)  # Uncomment this to create subplot tables
 
     sigmas = np.array([2, 2, 2]) / np.sqrt(2)
     noise = perlin_noise(nx, nx, nz, scale=8)  # make sure nx,nz are divisable by scale
-    psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.2 * noise)
+    # noise = 0
+    psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
     energy, psi_opt = dbec.optimize(psi1)
-    print(energy)
+
+    print("Energy", energy)
+    plot_one(psi_opt)
+
+    print("Calc excitations...")
+    # eigenvalues, eigenvectors = dbec.calc_excitations_arpack(psi_opt,
+    # k=10, maxiter=40000, tol=1e-4)
+    eigenvalues, eigenvectors = dbec.calc_excitations_slepc(
+        psi_opt, k=20, bk=300, maxiter=20000, tol=1e-5
+    )
+
+    logging.info(eigenvalues)
 
 
 if __name__ == "__main__":

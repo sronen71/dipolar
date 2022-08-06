@@ -1,2 +1,3 @@
 results/*.pkl
+petsc/my-config/
 __pycache__/

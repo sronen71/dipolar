@@ -1,13 +1,61 @@
 import logging
+import sys
+import time
+import warnings
 
 import numpy as np
+import slepc4py
 import torch
+import torch.utils.dlpack as dlpack
 from numpy.fft import fftfreq
+from scipy.sparse.linalg import ArpackNoConvergence, LinearOperator, eigs
 from torch.optim import LBFGS
-from tqdm import trange
+from tqdm import tqdm
+
+slepc4py.init(sys.argv)  # it needs to come before petsc import to get options correctly
+from petsc4py import PETSc
+
+from utils import solve_eigensystem
+
+options = PETSc.Options()
+options.setValue("vec_type", "cuda")
+options.setValue("mat_type", "aijcusparse")
+options.setValue("eps_view", None)
+# options.setValue("eps_monitor_conv", None)
+options.setValue("eps_monitor", None)
+options.setValue("eps_conv_abs", None)
+warnings.filterwarnings(
+    "ignore", message="Casting complex values to real discards the imaginary part"
+)
 
 if torch.cuda.is_available:
     torch.set_default_tensor_type(torch.cuda.FloatTensor)
+
+
+class Basis:
+    def __init__(self, dbec, psi):
+        self.dbec = dbec
+        n = dbec.grid.nx * dbec.grid.ny * dbec.grid.nz
+        # self.bdg = self.dbec.bdg_op(psi)
+        self.basis = self.dbec.basis_op(psi)
+        self.psi = psi
+        tmpx = torch.zeros(n, dtype=psi.dtype)
+        tmpy = torch.zeros(n, dtype=psi.dtype)
+        self.x_cache = PETSc.Vec().createWithDLPack(dlpack.to_dlpack(tmpx.clone()))
+        self.y_cache = PETSc.Vec().createWithDLPack(dlpack.to_dlpack(tmpy.clone()))
+        self.shadow = PETSc.Mat().createAIJ([n, n])
+        self.shadow.setFromOptions()
+
+    def mult(self, A, x, y):
+        x.attachDLPackInfo(self.x_cache)
+        x_tensor = torch.from_dlpack(x.toDLPack())
+        y.attachDLPackInfo(self.y_cache)
+        y_tensor = torch.from_dlpack(y.toDLPack())
+        # y_tensor[...] = self.bdg(x_tensor)
+        y_tensor[...] = self.basis(x_tensor)
+
+    def createVecs(self, A, side=None):
+        return self.shadow.createVecs(side=side)
 
 
 class Potential:
@@ -107,7 +155,8 @@ class DBEC:
         potential,
         grid,
         Bcutoff,
-        precision="float64",
+        precision="float32",
+        spectrum_precision="float64",
     ):
         """
         Dipolar BEC
@@ -125,6 +174,11 @@ class DBEC:
             self.precision = torch.float32
         else:
             self.precision = torch.float64
+
+        if spectrum_precision == "float32":
+            self.specturm_precision = torch.float32
+        else:
+            self.spectrum_precision = torch.float64
 
         self.scattering_length = scattering_length
         self.num_atoms = num_atoms
@@ -150,6 +204,7 @@ class DBEC:
             * scattering_length ** (3 / 2)
             * (1 + 3 / 2 * self.edd**2)
         )
+        self.grad = None
 
     def _make_kspace_operators(self):
         """
@@ -163,25 +218,78 @@ class DBEC:
         vdk *= spherical_cut
         vdk[0, 0, 0] = 0
 
-        # Disable this weighting for now, it breaks Parseval's theorem
-        #  (unitarity of fourier transform):
-        # if k2.shape[0] // 2 == 0:  # for even size need double weight
-        # for highest positive frequency
-        #    k2[k2.shape[0] // 2, :, :] *= 2
-        # if k2.shape[1] // 2 == 0:
-        #    k2[:, k2.shape[1] // 2, :] *= 2
-        # if k2.shape[2] // 2 == 0:
-        #    k2[:, :, k2.shape[2] // 2] *= 2
-
         return (
             torch.as_tensor(k2, dtype=self.precision),
             torch.as_tensor(vdk, dtype=self.precision),
         )
 
     def normalize(self, psi):
-        dvol = self.grid.dx * self.grid.dy * self.grid.dz
-        norm = torch.sqrt(torch.sum(torch.abs(psi) ** 2) * dvol)
+        norm = torch.linalg.vector_norm(psi * np.sqrt(self.grid.dvol))
         return psi / norm
+
+    def kinetic_energy(self, psi):
+        return (
+            torch.sum(self.k2 / 2 * torch.abs(torch.fft.fftn(psi, norm="ortho")) ** 2)
+            * self.grid.dvol
+        )
+
+    def potential_energy(self, psi2):
+        return torch.sum(self.potential_grid * psi2) * self.grid.dvol
+
+    def scattering_energy(self, psi2):
+        if self.scattering_length == 0:
+            scattering_energy = 0
+        else:
+            scattering_energy = (
+                self.num_atoms * 0.5 * torch.sum(self.g * psi2**2) * self.grid.dvol
+            )
+        return scattering_energy
+
+    def dipolar_energy(self, psi2):
+        if self.dipole_length == 0:
+            dipolar_energy = 0
+        else:
+            dipolar_energy = (
+                self.num_atoms
+                * 0.5
+                * (torch.sum(self.vdk * torch.abs(torch.fft.fftn(psi2, norm="ortho")) ** 2))
+                * self.grid.dvol
+            )
+        return dipolar_energy
+
+    def lhy_energy(self, psi2):
+        return (
+            (2 / 5)
+            * self.num_atoms ** (3 / 2)
+            * self.glhy
+            * torch.sum(psi2 ** (5 / 2))
+            * self.grid.dvol
+        )
+
+    def calculate_mu(self, psi, return_all=False):
+        """
+
+        Args:
+            psi : [nx,ny,nz], assumed to be normalized to 1
+
+        Return: chemical potential mu per atom, in hbar*omega_x units
+        """
+        psi_norm = self.normalize(psi)
+        psi2 = torch.abs(psi_norm) ** 2
+        kinetic_energy = self.kinetic_energy(psi_norm)
+        potential_energy = self.potential_energy(psi2)
+        scattering_energy = self.scattering_energy(psi2)
+        dipolar_energy = self.dipolar_energy(psi2)
+        lhy_energy = self.lhy_energy(psi2)
+        mu = (
+            kinetic_energy
+            + potential_energy
+            + 2 * scattering_energy
+            + 2 * dipolar_energy
+            + 5 / 2 * lhy_energy
+        )
+
+        return mu
 
     def calculate_energy(self, psi, return_all=False):
         """
@@ -193,31 +301,11 @@ class DBEC:
         """
         psi_norm = self.normalize(psi)
         psi2 = torch.abs(psi_norm) ** 2
-        dvol = self.grid.dx * self.grid.dy * self.grid.dz
-        kinetic_energy = (
-            torch.sum(self.k2 / 2 * torch.abs(torch.fft.fftn(psi_norm, norm="ortho")) ** 2) * dvol
-        )
-
-        potential_energy = torch.sum(self.potential_grid * psi2) * dvol
-        if self.scattering_length == 0:
-            scattering_energy = 0
-        else:
-            scattering_energy = self.num_atoms * 0.5 * torch.sum(self.g * psi2**2) * dvol
-        if self.dipole_length == 0:
-            dipolar_energy = 0
-            lhy_energy = 0
-        else:
-            dipolar_energy = (
-                self.num_atoms
-                * 0.5
-                * (torch.sum(self.vdk * torch.abs(torch.fft.fftn(psi2, norm="ortho")) ** 2))
-                * dvol
-            )
-
-            lhy_energy = (
-                self.num_atoms ** (3 / 2) * (2 / 5) * self.glhy * torch.sum(psi2 ** (5 / 2)) * dvol
-            )
-
+        kinetic_energy = self.kinetic_energy(psi_norm)
+        potential_energy = self.potential_energy(psi2)
+        scattering_energy = self.scattering_energy(psi2)
+        dipolar_energy = self.dipolar_energy(psi2)
+        lhy_energy = self.lhy_energy(psi2)
         energy = kinetic_energy + potential_energy + scattering_energy + dipolar_energy + lhy_energy
         if return_all:
             return (
@@ -231,6 +319,86 @@ class DBEC:
         else:
             return energy
 
+    def h0_func(self, f):
+        return torch.fft.ifftn(self.k2 / 2 * torch.fft.fftn(f)) + self.potential_grid * f
+
+    def c_op(self, psi):
+        psi2 = torch.abs(psi**2)
+        dpot = torch.fft.ifftn(torch.fft.fftn(psi2) * self.vdk)
+
+        def c_func(f):
+            return (
+                self.num_atoms
+                * (self.g * psi2 + self.num_atoms ** (1 / 2) * self.glhy * psi2 ** (3 / 2) + dpot)
+                * f
+            )
+
+        return c_func
+
+    def x_op(self, psi):
+        def x_func(f):
+            psi2 = torch.abs(psi**2)
+            return self.num_atoms * (
+                self.g * psi2 * f
+                + 3 / 2 * self.num_atoms ** (1 / 2) * self.glhy * psi2 ** (3 / 2) * f
+                + torch.fft.ifftn(torch.fft.fftn(torch.conj(psi) * f) * self.vdk) * psi
+            )
+
+        return x_func
+
+    def basis_op(self, psi):  # BdG operator, eq. (29a) in Ronen et al. 2006.
+        # psi should be normalized
+        # psi is numpy input
+        psi = torch.as_tensor(psi, dtype=self.precision)
+        mu = self.calculate_mu(psi)
+        c_func = self.c_op(psi)
+
+        def gp_func(x):
+            f = torch.as_tensor(x, dtype=self.spectrum_precision)
+            f = f.reshape(self.grid.nx, self.grid.ny, self.grid.nz)
+            y = self.h0_func(f) - mu * f + c_func(f)
+            return y.flatten().to(x.dtype)
+
+        return gp_func
+
+    def calc_excitations_slepc(self, psi, k=4, bk=4, maxiter=10, tol=1e-3, v0=None):
+        options.setValue("eps_max_it", maxiter)
+        options.setValue("eps_tol", tol)
+        # assume ground state psi already normalized
+        n = psi.size
+        # calculate initial basis of GP operator
+        context = Basis(self, torch.as_tensor(psi, dtype=self.spectrum_precision))
+        A = PETSc.Mat().createPython([n, n], context)
+        if v0 is None:
+            v0 = psi
+        w, v = solve_eigensystem(A, bk, x0=v0, problem_type="HEP")
+        # Calculate BdG matrix elements in basis
+        B = PETSc.Mat().create()
+        B.setSizes([2 * bk, 2 * bk])
+        B.setFromOptions()
+        B.setUp()
+        x_op = self.x_op(torch.as_tensor(psi, dtype=self.spectrum_precision))
+        vt = []
+        for i in range(bk):
+            vi = torch.as_tensor(v[i]).reshape(self.grid.nx, self.grid.ny, self.grid.nz)
+            vt.append(vi)
+        for i in range(bk):
+            xi = x_op(vt[i])
+            for j in range(bk):
+                d = 0
+
+                xij = torch.sum(torch.conj(vt[j]) * xi)
+                xij = torch.real(xij).item()
+                if j == i:
+                    d = w[i]
+                B[i, j] = xij + d
+                B[i + bk, j + bk] = -xij - d
+                B[i, j + bk] = xij
+                B[i + bk, j] = -xij
+        B.assemble()
+        w, v = solve_eigensystem(B, k)
+        return w, v
+
     def optimize(self, psi):
 
         self.potential_grid = torch.as_tensor(
@@ -241,36 +409,53 @@ class DBEC:
         psi = self.normalize(psi)
         min_energy = self.calculate_energy(psi).item()
         psi.requires_grad_()
-        optimizer = LBFGS([psi], history_size=15, max_iter=100, line_search_fn="strong_wolfe")
+
+        tol = 1e-12
+        optimizer = LBFGS(
+            [psi],
+            history_size=15,
+            max_iter=100,
+            tolerance_grad=tol,
+            tolerance_change=tol,
+            line_search_fn="strong_wolfe",
+        )
         calls = 0
         iterations = 50
-        with trange(iterations) as pbar:
+
+        with tqdm(range(1, iterations + 1)) as pbar:
             for i in pbar:
 
                 def closure():
                     nonlocal calls
                     calls += 1
                     optimizer.zero_grad()
-                    energy1 = self.calculate_energy(psi)
-                    energy1.backward()
-                    return energy1
+                    loss = self.calculate_energy(psi)
+                    loss.backward()
+                    return loss
 
                 optimizer.step(closure)
-                # with torch.no_grad():
-
-                energy = self.calculate_energy(psi).item()
-                diff = energy - min_energy
-
+                G = psi.grad.abs().max()
+                with torch.no_grad():
+                    norm_psi = self.normalize(psi)
+                    energy = self.calculate_energy(psi).item()
+                    mu = self.calculate_mu(psi).item()
+                    GP = self.h0_func(norm_psi) + self.c_op(norm_psi)(norm_psi) - mu * norm_psi
+                    GP = GP.abs().max()
+                    dE = energy - min_energy
                 if energy < min_energy:
                     min_energy = energy
-                iterations_info = f"Iteration {i} Calls {calls} Energy {energy:.8f} diff {diff:.1e}"
+                iterations_info = (
+                    f"Iteration {i} Calls {calls} Energy {energy:.8f} mu {mu:.8f} "
+                    f"dE {dE:.1e} Grad_max {G:.1e} GPmax {GP:.1e}"
+                )
                 pbar.set_description(iterations_info)
-                if abs(diff) < 1e-8:
+                if abs(dE) < tol:
                     break
         logging.info(iterations_info)
-
+        self.grad = psi.grad
         psi_opt = self.normalize(torch.abs(psi))
-        energy = self.calculate_energy(psi).detach().cpu().numpy()
+
+        energy = self.calculate_energy(psi_opt).detach().cpu().numpy()
         psi_opt = psi_opt.detach().cpu().numpy()
         return energy, psi_opt
 
@@ -306,3 +491,4 @@ class Grid:
         self.limx = limx
         self.limy = limy
         self.limz = limz
+        self.dvol = self.dx * self.dy * self.dz

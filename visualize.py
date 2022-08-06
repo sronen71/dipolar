@@ -2,14 +2,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
-def plot_contour(x, y, v):
-    fig, ax = plt.subplots(1, 1)
-    vt = np.transpose(v)
-    plt.contourf(x, y, vt)
-    ax.set_aspect("equal")
-    ax.set_xlabel("x")
-    ax.set_ylabel("y")
-    plt.colorbar()
+def plot_one(psi):
+    mid_z = psi.shape[2] // 2
+    plt.imshow(np.abs(psi[:, :, mid_z] ** 2))
     plt.show()
 
 
@@ -23,7 +18,7 @@ def plot_image(ax, xmin, xmax, out, aho, limx):
     )
 
 
-def plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx):
+def plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx, tag):
     # rows : lattice spacings
     # cols: lattice depth
 
@@ -52,4 +47,4 @@ def plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_typ
                 ax.tick_params(axis="x", labelsize=50)
             else:
                 ax.set_xticks([])
-    plt.savefig(f"figs/phase_dia_{lattice_type}_lat", bbox_inches="tight")
+    plt.savefig(f"figs/phases_{lattice_type}_{tag}.png", bbox_inches="tight")
