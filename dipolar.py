@@ -1,6 +1,5 @@
 import logging
 import sys
-import time
 import warnings
 
 import numpy as np
@@ -8,7 +7,6 @@ import slepc4py
 import torch
 import torch.utils.dlpack as dlpack
 from numpy.fft import fftfreq
-from scipy.sparse.linalg import ArpackNoConvergence, LinearOperator, eigs
 from torch.optim import LBFGS
 from tqdm import tqdm
 
@@ -156,7 +154,6 @@ class DBEC:
         grid,
         Bcutoff,
         precision="float32",
-        spectrum_precision="float64",
     ):
         """
         Dipolar BEC
@@ -174,11 +171,6 @@ class DBEC:
             self.precision = torch.float32
         else:
             self.precision = torch.float64
-
-        if spectrum_precision == "float32":
-            self.specturm_precision = torch.float32
-        else:
-            self.spectrum_precision = torch.float64
 
         self.scattering_length = scattering_length
         self.num_atoms = num_atoms
@@ -204,7 +196,7 @@ class DBEC:
             * scattering_length ** (3 / 2)
             * (1 + 3 / 2 * self.edd**2)
         )
-        self.grad = None
+        # self.grad = None
 
     def _make_kspace_operators(self):
         """
@@ -301,6 +293,7 @@ class DBEC:
         """
         psi_norm = self.normalize(psi)
         psi2 = torch.abs(psi_norm) ** 2
+        # psi2 = psi_norm**2
         kinetic_energy = self.kinetic_energy(psi_norm)
         potential_energy = self.potential_energy(psi2)
         scattering_energy = self.scattering_energy(psi2)
@@ -354,7 +347,7 @@ class DBEC:
         c_func = self.c_op(psi)
 
         def gp_func(x):
-            f = torch.as_tensor(x, dtype=self.spectrum_precision)
+            f = torch.as_tensor(x, dtype=self.precision)
             f = f.reshape(self.grid.nx, self.grid.ny, self.grid.nz)
             y = self.h0_func(f) - mu * f + c_func(f)
             return y.flatten().to(x.dtype)
@@ -362,12 +355,15 @@ class DBEC:
         return gp_func
 
     def calc_excitations_slepc(self, psi, k=4, bk=4, maxiter=10, tol=1e-3, v0=None):
+        if self.precision != torch.float64:
+            print("Must use double precision for spectrum")
+            return [], []
         options.setValue("eps_max_it", maxiter)
         options.setValue("eps_tol", tol)
         # assume ground state psi already normalized
         n = psi.size
         # calculate initial basis of GP operator
-        context = Basis(self, torch.as_tensor(psi, dtype=self.spectrum_precision))
+        context = Basis(self, torch.as_tensor(psi, dtype=self.precision))
         A = PETSc.Mat().createPython([n, n], context)
         if v0 is None:
             v0 = psi
@@ -377,7 +373,7 @@ class DBEC:
         B.setSizes([2 * bk, 2 * bk])
         B.setFromOptions()
         B.setUp()
-        x_op = self.x_op(torch.as_tensor(psi, dtype=self.spectrum_precision))
+        x_op = self.x_op(torch.as_tensor(psi, dtype=self.precision))
         vt = []
         for i in range(bk):
             vi = torch.as_tensor(v[i]).reshape(self.grid.nx, self.grid.ny, self.grid.nz)
@@ -387,20 +383,19 @@ class DBEC:
             for j in range(bk):
                 d = 0
 
-                xij = torch.sum(torch.conj(vt[j]) * xi)
-                xij = torch.real(xij).item()
+                xji = torch.sum(torch.conj(vt[j]) * xi)
+                xji = torch.real(xji).item()
                 if j == i:
                     d = w[i]
-                B[i, j] = xij + d
-                B[i + bk, j + bk] = -xij - d
-                B[i, j + bk] = xij
-                B[i + bk, j] = -xij
+                B[j, i] = xji + d
+                B[j + bk, i + bk] = -xji - d
+                B[j, i + bk] = xji
+                B[j + bk, i] = -xji
         B.assemble()
         w, v = solve_eigensystem(B, k)
         return w, v
 
     def optimize(self, psi):
-
         self.potential_grid = torch.as_tensor(
             self.potential(self.grid.x, self.grid.y, self.grid.z), dtype=self.precision
         )
@@ -408,8 +403,9 @@ class DBEC:
         psi = torch.as_tensor(psi, dtype=self.precision)
         psi = self.normalize(psi)
         min_energy = self.calculate_energy(psi).item()
+        calls = 0
+        iterations = 50
         psi.requires_grad_()
-
         tol = 1e-12
         optimizer = LBFGS(
             [psi],
@@ -419,8 +415,6 @@ class DBEC:
             tolerance_change=tol,
             line_search_fn="strong_wolfe",
         )
-        calls = 0
-        iterations = 50
 
         with tqdm(range(1, iterations + 1)) as pbar:
             for i in pbar:
@@ -434,13 +428,14 @@ class DBEC:
                     return loss
 
                 optimizer.step(closure)
-                G = psi.grad.abs().max()
+                G = psi.grad.abs().max().item()
+
                 with torch.no_grad():
-                    norm_psi = self.normalize(psi)
+                    norm_psi = self.normalize(torch.real(psi))
                     energy = self.calculate_energy(psi).item()
                     mu = self.calculate_mu(psi).item()
                     GP = self.h0_func(norm_psi) + self.c_op(norm_psi)(norm_psi) - mu * norm_psi
-                    GP = GP.abs().max()
+                    GP = GP.abs().max().item()
                     dE = energy - min_energy
                 if energy < min_energy:
                     min_energy = energy
@@ -449,13 +444,13 @@ class DBEC:
                     f"dE {dE:.1e} Grad_max {G:.1e} GPmax {GP:.1e}"
                 )
                 pbar.set_description(iterations_info)
+                logging.info(iterations_info)
                 if abs(dE) < tol:
                     break
-        logging.info(iterations_info)
-        self.grad = psi.grad
-        psi_opt = self.normalize(torch.abs(psi))
 
-        energy = self.calculate_energy(psi_opt).detach().cpu().numpy()
+        psi = torch.as_tensor(psi)
+        energy = self.calculate_energy(psi).detach().item()
+        psi_opt = self.normalize(psi)
         psi_opt = psi_opt.detach().cpu().numpy()
         return energy, psi_opt
 

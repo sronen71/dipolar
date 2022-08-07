@@ -56,7 +56,7 @@ def scan(dbec, aho):
 
 
 def main():
-    torch.manual_seed(1)
+    torch.manual_seed(3)
     os.makedirs("figs", exist_ok=True)
     os.makedirs("results", exist_ok=True)
     os.makedirs("logs", exist_ok=True)
@@ -71,9 +71,9 @@ def main():
     omega_x = 2 * np.pi * 125  # Trap radial frequency, in rad/s
     aho = np.sqrt(constants.hbar / mass / omega_x)  # oscillator length in meters
     omegas = np.array([1.0, 1.0, 2.0])  # trap frequencies in units of omega_x
-    num_atoms = 10 * 1e3  # Number of atoms 100
+    num_atoms = 100 * 1e3  # Number of atoms 100
     scattering_length = 85 * constants.a0
-    dipole_length = 0 * 131 * constants.a0
+    dipole_length = 131 * constants.a0
 
     lattice_constant = 1  # in units of aho
     lattice_depth = 0  # in units of hbar*omegar_r
@@ -87,9 +87,9 @@ def main():
     )
     nx = 128  #
     nz = 64
-    limx = 12  # [aho]
-    limz = 12  # [aho]
-    Bcutoff = 12  # [aho]
+    limx = 10  # [aho]
+    limz = 10  # [aho]
+    Bcutoff = 10  # [aho]
     logging.info("START RUN")
     logging.info(
         f"num_atoms {num_atoms} omega_x 2*pi*{omega_x/2/np.pi:.2f} "
@@ -103,7 +103,7 @@ def main():
     logging.info(f"nx {nx} nz {nz} limx {limx} limz {limz} Bcutoff {Bcutoff}")
     grid = dipolar.Grid(nx, nx, nz, limx, limx, limz)
 
-    precision = "float32"
+    precision = "float64"
     # "float64"for full precision
     # "float32" to get x5 speed on newer nvidia GPUs,
     # at slight cost of precision (relative energy error ~1e-6)
@@ -123,6 +123,7 @@ def main():
     sigmas = np.array([2, 2, 2]) / np.sqrt(2)
     noise = perlin_noise(nx, nx, nz, scale=8)  # make sure nx,nz are divisable by scale
     # noise = 0
+    # noise = np.random.randn(nx, nx, nz)
     psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
     energy, psi_opt = dbec.optimize(psi1)
 
@@ -132,11 +133,12 @@ def main():
     print("Calc excitations...")
     # eigenvalues, eigenvectors = dbec.calc_excitations_arpack(psi_opt,
     # k=10, maxiter=40000, tol=1e-4)
-    eigenvalues, eigenvectors = dbec.calc_excitations_slepc(
-        psi_opt, k=20, bk=300, maxiter=20000, tol=1e-5
-    )
+    if precision == "float64":
+        eigenvalues, eigenvectors = dbec.calc_excitations_slepc(
+            psi_opt, k=20, bk=300, maxiter=20000, tol=1e-6
+        )
 
-    logging.info(eigenvalues)
+        logging.info(eigenvalues)
 
 
 if __name__ == "__main__":

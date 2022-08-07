@@ -15,10 +15,10 @@ def solve_eigensystem(A, k=1, x0=None, problem_type="NHEP", which="SM"):
     # Setup the eigensolver
     E = SLEPc.EPS().create()
     E.setOperators(A, None)
-    if k <= 150:
+    if k <= 100:
         E.setDimensions(nev=k, ncv=PETSc.DECIDE)
     else:
-        E.setDimensions(nev=k, mpd=150)
+        E.setDimensions(nev=k, mpd=100)
     if problem_type == "HEP":
         ptype = SLEPc.EPS.ProblemType.HEP
     else:

@@ -1,3 +1,4 @@
 results/*.pkl
 petsc/my-config/
+.vscode/
 __pycache__/
