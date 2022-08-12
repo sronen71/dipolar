@@ -1,0 +1,5 @@
+# MatFD Manual Pages
+
+The MatFD tools handle the approximation of Jacobians via sparse
+finite differences.
+

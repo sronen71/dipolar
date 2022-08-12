@@ -1,0 +1,4 @@
+# DMProduct Manual Pages
+
+The DMProduct class represents a (local) Cartesian product of other `DM` objects.
+

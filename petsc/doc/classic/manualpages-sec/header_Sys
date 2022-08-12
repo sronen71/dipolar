@@ -1,0 +1,5 @@
+# PETSc System Routines Manual Pages
+
+PETSc provides a variety of "system" level routines, including parallel file
+access, synchronized printing to screen.
+
