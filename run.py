@@ -10,6 +10,8 @@ import dipolar
 from perlin_noise import perlin_noise
 from visualize import plot_one, plot_table
 
+EXCITATIONS = False
+
 
 def scan(dbec, aho):
     sigmas = np.array([2, 2, 2]) / np.sqrt(2)
@@ -71,13 +73,13 @@ def main():
     omega_x = 2 * np.pi * 125  # Trap radial frequency, in rad/s
     aho = np.sqrt(constants.hbar / mass / omega_x)  # oscillator length in meters
     omegas = np.array([1.0, 1.0, 2.0])  # trap frequencies in units of omega_x
-    num_atoms = 100 * 1e3  # Number of atoms 100
-    scattering_length = 85 * constants.a0
+    num_atoms = 400 * 1e3  # Number of atoms 100
+    scattering_length = 86 * constants.a0
     dipole_length = 131 * constants.a0
 
-    lattice_constant = 1  # in units of aho
-    lattice_depth = 0  # in units of hbar*omegar_r
-    lattice_type = None
+    lattice_constant = 2.83  # in units of aho
+    lattice_depth = 0.4  # in units of hbar*omegar_r
+    lattice_type = "square"
     potential = dipolar.Potential(
         omegas,
         lattice_constant,
@@ -86,10 +88,10 @@ def main():
         lattice_shift=[0.0, 0.0],
     )
     nx = 128  #
-    nz = 64
-    limx = 10  # [aho]
-    limz = 10  # [aho]
-    Bcutoff = 10  # [aho]
+    nz = 96
+    limx = 15  # [aho]
+    limz = 15  # [aho]
+    Bcutoff = 15  # [aho]
     logging.info("START RUN")
     logging.info(
         f"num_atoms {num_atoms} omega_x 2*pi*{omega_x/2/np.pi:.2f} "
@@ -130,15 +132,16 @@ def main():
     print("Energy", energy)
     plot_one(psi_opt)
 
-    print("Calc excitations...")
-    # eigenvalues, eigenvectors = dbec.calc_excitations_arpack(psi_opt,
-    # k=10, maxiter=40000, tol=1e-4)
-    if precision == "float64":
-        eigenvalues, eigenvectors = dbec.calc_excitations_slepc(
-            psi_opt, k=20, bk=300, maxiter=20000, tol=1e-6
-        )
+    if EXCITATIONS:
+        print("Calc excitations...")
+        # eigenvalues, eigenvectors = dbec.calc_excitations_arpack(psi_opt,
+        # k=10, maxiter=40000, tol=1e-4)
+        if precision == "float64":
+            eigenvalues, eigenvectors = dbec.calc_excitations_slepc(
+                psi_opt, k=20, bk=300, maxiter=20000, tol=1e-6
+            )
 
-        logging.info(eigenvalues)
+            logging.info(eigenvalues)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,3 @@
+PETSC_ARCH=my-config
+PETSC_DIR=/home/sronen/Code/dipolar/petsc
+include $(PETSC_DIR)/$(PETSC_ARCH)/lib/petsc/conf/petscvariables
