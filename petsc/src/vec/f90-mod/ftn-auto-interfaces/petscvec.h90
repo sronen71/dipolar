@@ -289,7 +289,7 @@
        PetscErrorCode z
        end subroutine VecSwap
       subroutine VecStashView(a,b,z)
-       import tPetscViewer,tVec
+       import tVec,tPetscViewer
        Vec a ! Vec
        PetscViewer b ! PetscViewer
        PetscErrorCode z
@@ -850,7 +850,7 @@
        PetscErrorCode z
        end subroutine VecUniqueEntries
       subroutine PetscSectionVecView(a,b,c,z)
-       import tPetscSection,tPetscViewer,tVec
+       import tVec,tPetscViewer,tPetscSection
        PetscSection a ! PetscSection
        Vec b ! Vec
        PetscViewer c ! PetscViewer

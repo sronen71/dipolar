@@ -63,7 +63,7 @@
        PetscErrorCode z
        end subroutine MatMPIAIJGetLocalMat
       subroutine MatMPIAIJGetLocalMatMerge(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        MatReuse b ! MatReuse
        IS c ! IS
@@ -309,7 +309,7 @@
        PetscErrorCode z
        end subroutine MatGetBindingPropagates
       subroutine MatReorderForNonzeroDiagonal(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        PetscReal b ! PetscReal
        IS c ! IS
@@ -331,7 +331,7 @@
        PetscErrorCode z
        end subroutine MatShift
       subroutine MatDiagonalSet(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        InsertMode c ! InsertMode
@@ -466,7 +466,7 @@
        PetscErrorCode z
        end subroutine MatIsLinear
       subroutine MatGetColumnVector(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        PetscInt c ! PetscInt
@@ -553,42 +553,42 @@
        PetscErrorCode z
        end subroutine MatDenseSetLDA
       subroutine MatDenseGetColumnVec(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatDenseGetColumnVec
       subroutine MatDenseRestoreColumnVec(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatDenseRestoreColumnVec
       subroutine MatDenseGetColumnVecRead(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatDenseGetColumnVecRead
       subroutine MatDenseRestoreColumnVecRead(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatDenseRestoreColumnVecRead
       subroutine MatDenseGetColumnVecWrite(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatDenseGetColumnVecWrite
       subroutine MatDenseRestoreColumnVecWrite(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -713,7 +713,7 @@
        PetscErrorCode z
        end subroutine MatFDColoringSetBlockSize
       subroutine MatFDColoringSetUp(a,b,c,z)
-       import tMat,tISColoring,tMatFDColoring
+       import tMatFDColoring,tMat,tISColoring
        Mat a ! Mat
        ISColoring b ! ISColoring
        MatFDColoring c ! MatFDColoring
@@ -725,7 +725,7 @@
        PetscErrorCode z
        end subroutine MatFDColoringSetFromOptions
       subroutine MatFDColoringCreate(a,b,c,z)
-       import tMat,tISColoring,tMatFDColoring
+       import tMatFDColoring,tMat,tISColoring
        Mat a ! Mat
        ISColoring b ! ISColoring
        MatFDColoring c ! MatFDColoring
@@ -737,7 +737,7 @@
        PetscErrorCode z
        end subroutine MatFDColoringDestroy
       subroutine MatCreateVecsFFTW(a,b,c,d,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -745,14 +745,14 @@
        PetscErrorCode z
        end subroutine MatCreateVecsFFTW
       subroutine VecScatterPetscToFFTW(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine VecScatterPetscToFFTW
       subroutine VecScatterFFTWToPetsc(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -856,7 +856,7 @@
        PetscErrorCode z
        end subroutine MatCreateSeqBAIJWithArrays
       subroutine MatCreateSubMatrixVirtual(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        IS c ! IS
@@ -864,7 +864,7 @@
        PetscErrorCode z
        end subroutine MatCreateSubMatrixVirtual
       subroutine MatSubMatrixVirtualUpdate(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        Mat b ! Mat
        IS c ! IS
@@ -872,7 +872,7 @@
        PetscErrorCode z
        end subroutine MatSubMatrixVirtualUpdate
       subroutine MatSetRandom(a,b,z)
-       import tMat,tPetscRandom
+       import tPetscRandom,tMat
        Mat a ! Mat
        PetscRandom b ! PetscRandom
        PetscErrorCode z
@@ -896,13 +896,13 @@
        PetscErrorCode z
        end subroutine MatFactorClearError
       subroutine MatFindNonzeroRows(a,b,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscErrorCode z
        end subroutine MatFindNonzeroRows
       subroutine MatFindZeroRows(a,b,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscErrorCode z
@@ -1044,35 +1044,35 @@
        PetscErrorCode z
        end subroutine MatGetLayouts
       subroutine MatMultDiagonalBlock(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatMultDiagonalBlock
       subroutine MatMult(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatMult
       subroutine MatMultTranspose(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatMultTranspose
       subroutine MatMultHermitianTranspose(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatMultHermitianTranspose
       subroutine MatMultAdd(a,b,c,d,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1080,7 +1080,7 @@
        PetscErrorCode z
        end subroutine MatMultAdd
       subroutine MatMultTransposeAdd(a,b,c,d,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1088,7 +1088,7 @@
        PetscErrorCode z
        end subroutine MatMultTransposeAdd
       subroutine MatMultHermitianTransposeAdd(a,b,c,d,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1096,14 +1096,14 @@
        PetscErrorCode z
        end subroutine MatMultHermitianTransposeAdd
       subroutine MatQRFactor(a,b,c,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        MatFactorInfo c ! MatFactorInfo
        PetscErrorCode z
        end subroutine MatQRFactor
       subroutine MatQRFactorSymbolic(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        Mat b ! Mat
        IS c ! IS
@@ -1118,7 +1118,7 @@
        PetscErrorCode z
        end subroutine MatQRFactorNumeric
       subroutine MatSolve(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1146,21 +1146,21 @@
        PetscErrorCode z
        end subroutine MatMatTransposeSolve
       subroutine MatForwardSolve(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatForwardSolve
       subroutine MatBackwardSolve(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatBackwardSolve
       subroutine MatSolveAdd(a,b,c,d,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1168,14 +1168,14 @@
        PetscErrorCode z
        end subroutine MatSolveAdd
       subroutine MatSolveTranspose(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatSolveTranspose
       subroutine MatSolveTransposeAdd(a,b,c,d,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1183,7 +1183,7 @@
        PetscErrorCode z
        end subroutine MatSolveTransposeAdd
       subroutine MatSOR(a,b,c,d,e,f,g,h,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        PetscReal c ! PetscReal
@@ -1209,13 +1209,13 @@
        PetscErrorCode z
        end subroutine MatDuplicate
       subroutine MatGetDiagonal(a,b,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        PetscErrorCode z
        end subroutine MatGetDiagonal
       subroutine MatGetRowSum(a,b,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        PetscErrorCode z
@@ -1263,7 +1263,7 @@
        PetscErrorCode z
        end subroutine MatIsHermitianTranspose
       subroutine MatPermute(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        IS c ! IS
@@ -1278,7 +1278,7 @@
        PetscErrorCode z
        end subroutine MatEqual
       subroutine MatDiagonalScale(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1335,7 +1335,7 @@
        PetscErrorCode z
        end subroutine MatZeroEntries
       subroutine MatZeroRowsColumns(a,b,c,d,e,f,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        PetscInt c (*) ! PetscInt
@@ -1345,7 +1345,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsColumns
       subroutine MatZeroRowsColumnsIS(a,b,c,d,e,z)
-       import tMat,tIS,tVec
+       import tIS,tVec,tMat
        Mat a ! Mat
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -1354,7 +1354,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsColumnsIS
       subroutine MatZeroRows(a,b,c,d,e,f,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        PetscInt c (*) ! PetscInt
@@ -1364,7 +1364,7 @@
        PetscErrorCode z
        end subroutine MatZeroRows
       subroutine MatZeroRowsIS(a,b,c,d,e,z)
-       import tMat,tIS,tVec
+       import tIS,tVec,tMat
        Mat a ! Mat
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -1373,7 +1373,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsIS
       subroutine MatZeroRowsStencil(a,b,c,d,e,f,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        MatStencil c (*) ! MatStencil
@@ -1383,7 +1383,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsStencil
       subroutine MatZeroRowsColumnsStencil(a,b,c,d,e,f,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        MatStencil c (*) ! MatStencil
@@ -1393,7 +1393,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsColumnsStencil
       subroutine MatZeroRowsLocalIS(a,b,c,d,e,z)
-       import tMat,tIS,tVec
+       import tIS,tVec,tMat
        Mat a ! Mat
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -1402,7 +1402,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsLocalIS
       subroutine MatZeroRowsColumnsLocal(a,b,c,d,e,f,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        PetscInt c (*) ! PetscInt
@@ -1412,7 +1412,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsColumnsLocal
       subroutine MatZeroRowsColumnsLocalIS(a,b,c,d,e,z)
-       import tMat,tIS,tVec
+       import tIS,tVec,tMat
        Mat a ! Mat
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -1421,7 +1421,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsColumnsLocalIS
       subroutine MatIncreaseOverlap(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        IS c (*) ! IS
@@ -1429,7 +1429,7 @@
        PetscErrorCode z
        end subroutine MatIncreaseOverlap
       subroutine MatIncreaseOverlapSplit(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        IS c (*) ! IS
@@ -1484,7 +1484,7 @@
        PetscErrorCode z
        end subroutine MatSetBlockSizesFromMats
       subroutine MatResidual(a,b,c,d,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1497,7 +1497,7 @@
        PetscErrorCode z
        end subroutine MatSetUnfactored
       subroutine MatCreateSubMatrix(a,b,c,d,e,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        IS c ! IS
@@ -1519,7 +1519,7 @@
        PetscErrorCode z
        end subroutine MatStashSetInitialSize
       subroutine MatInterpolateAdd(a,b,c,d,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1527,14 +1527,14 @@
        PetscErrorCode z
        end subroutine MatInterpolateAdd
       subroutine MatInterpolate(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatInterpolate
       subroutine MatRestrict(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1563,43 +1563,43 @@
        PetscErrorCode z
        end subroutine MatMatRestrict
       subroutine MatGetNullSpace(a,b,z)
-       import tMat,tMatNullSpace
+       import tMatNullSpace,tMat
        Mat a ! Mat
        MatNullSpace b ! MatNullSpace
        PetscErrorCode z
        end subroutine MatGetNullSpace
       subroutine MatSetNullSpace(a,b,z)
-       import tMat,tMatNullSpace
+       import tMatNullSpace,tMat
        Mat a ! Mat
        MatNullSpace b ! MatNullSpace
        PetscErrorCode z
        end subroutine MatSetNullSpace
       subroutine MatGetTransposeNullSpace(a,b,z)
-       import tMat,tMatNullSpace
+       import tMatNullSpace,tMat
        Mat a ! Mat
        MatNullSpace b ! MatNullSpace
        PetscErrorCode z
        end subroutine MatGetTransposeNullSpace
       subroutine MatSetTransposeNullSpace(a,b,z)
-       import tMat,tMatNullSpace
+       import tMatNullSpace,tMat
        Mat a ! Mat
        MatNullSpace b ! MatNullSpace
        PetscErrorCode z
        end subroutine MatSetTransposeNullSpace
       subroutine MatSetNearNullSpace(a,b,z)
-       import tMat,tMatNullSpace
+       import tMatNullSpace,tMat
        Mat a ! Mat
        MatNullSpace b ! MatNullSpace
        PetscErrorCode z
        end subroutine MatSetNearNullSpace
       subroutine MatGetNearNullSpace(a,b,z)
-       import tMat,tMatNullSpace
+       import tMatNullSpace,tMat
        Mat a ! Mat
        MatNullSpace b ! MatNullSpace
        PetscErrorCode z
        end subroutine MatGetNearNullSpace
       subroutine MatDiagonalScaleLocal(a,b,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        PetscErrorCode z
@@ -1670,7 +1670,7 @@
        PetscErrorCode z
        end subroutine MatStashGetInfo
       subroutine MatFactorSetSchurIS(a,b,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscErrorCode z
@@ -1697,14 +1697,14 @@
        PetscErrorCode z
        end subroutine MatFactorRestoreSchurComplement
       subroutine MatFactorSolveSchurComplementTranspose(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatFactorSolveSchurComplementTranspose
       subroutine MatFactorSolveSchurComplement(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -1785,7 +1785,7 @@
        PetscErrorCode z
        end subroutine MatCreateRedundantMatrix
       subroutine MatGetLocalSubMatrix(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        IS c ! IS
@@ -1793,7 +1793,7 @@
        PetscErrorCode z
        end subroutine MatGetLocalSubMatrix
       subroutine MatRestoreLocalSubMatrix(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        IS c ! IS
@@ -1801,13 +1801,13 @@
        PetscErrorCode z
        end subroutine MatRestoreLocalSubMatrix
       subroutine MatFindZeroDiagonals(a,b,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscErrorCode z
        end subroutine MatFindZeroDiagonals
       subroutine MatFindOffBlockDiagonalEntries(a,b,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscErrorCode z
@@ -1834,7 +1834,7 @@
        PetscErrorCode z
        end subroutine MatCreateMPIMatConcatenateSeqMat
       subroutine MatSubdomainsCreateCoalesce(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        PetscInt c ! PetscInt
@@ -1865,7 +1865,7 @@
        PetscErrorCode z
        end subroutine MatHasCongruentLayouts
       subroutine MatNullSpaceCreateRigidBody(a,b,z)
-       import tMatNullSpace,tVec
+       import tVec,tMatNullSpace
        Vec a ! Vec
        MatNullSpace b ! MatNullSpace
        PetscErrorCode z
@@ -1876,7 +1876,7 @@
        PetscErrorCode z
        end subroutine MatNullSpaceDestroy
       subroutine MatNullSpaceTest(a,b,c,z)
-       import tMat,tMatNullSpace
+       import tMatNullSpace,tMat
        MatNullSpace a ! MatNullSpace
        Mat b ! Mat
        PetscBool c ! PetscBool
@@ -2018,7 +2018,7 @@
        PetscErrorCode z
        end subroutine MatISGetLocalToGlobalMapping
       subroutine MatLRCGetMats(a,b,c,d,e,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Mat b ! Mat
        Mat c ! Mat
@@ -2027,7 +2027,7 @@
        PetscErrorCode z
        end subroutine MatLRCGetMats
       subroutine MatCreateLRC(a,b,c,d,e,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Mat b ! Mat
        Vec c ! Vec
@@ -2117,7 +2117,7 @@
        PetscErrorCode z
        end subroutine MatMumpsGetRinfog
       subroutine MatCreateLocalRef(a,b,c,d,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        IS c ! IS
@@ -2162,7 +2162,7 @@
        PetscErrorCode z
        end subroutine MatNestGetSize
       subroutine MatNestSetSubMats(a,b,c,d,e,f,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        PetscInt b ! PetscInt
        IS c (*) ! IS
@@ -2279,7 +2279,7 @@
        PetscErrorCode z
        end subroutine MatMFFDResetHHistory
       subroutine MatMFFDSetBase(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec

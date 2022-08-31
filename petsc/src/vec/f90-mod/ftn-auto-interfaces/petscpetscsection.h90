@@ -69,13 +69,13 @@
        PetscErrorCode z
        end subroutine PetscSectionSetChart
       subroutine PetscSectionGetPermutation(a,b,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        IS b ! IS
        PetscErrorCode z
        end subroutine PetscSectionGetPermutation
       subroutine PetscSectionSetPermutation(a,b,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        IS b ! IS
        PetscErrorCode z
@@ -223,7 +223,7 @@
        PetscErrorCode z
        end subroutine PetscSectionGetConstrainedStorageSize
       subroutine PetscSectionCreateGlobalSection(a,b,c,d,e,z)
-       import tPetscSection,tPetscSF
+       import tPetscSF,tPetscSection
        PetscSection a ! PetscSection
        PetscSF b ! PetscSF
        PetscBool c ! PetscBool
@@ -232,7 +232,7 @@
        PetscErrorCode z
        end subroutine PetscSectionCreateGlobalSection
       subroutine PetscSectionCreateGlobalSectionCensored(a,b,c,d,e,f,z)
-       import tPetscSection,tPetscSF
+       import tPetscSF,tPetscSection
        PetscSection a ! PetscSection
        PetscSF b ! PetscSF
        PetscBool c ! PetscBool
@@ -316,14 +316,14 @@
        PetscErrorCode z
        end subroutine PetscSectionCreateSupersection
       subroutine PetscSectionCreateSubmeshSection(a,b,c,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        IS b ! IS
        PetscSection c ! PetscSection
        PetscErrorCode z
        end subroutine PetscSectionCreateSubmeshSection
       subroutine PetscSectionCreateSubdomainSection(a,b,c,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        IS b ! IS
        PetscSection c ! PetscSection
@@ -340,14 +340,14 @@
        PetscErrorCode z
        end subroutine PetscSectionDestroy
       subroutine PetscSectionPermute(a,b,c,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        IS b ! IS
        PetscSection c ! PetscSection
        PetscErrorCode z
        end subroutine PetscSectionPermute
       subroutine PetscSectionSetClosureIndex(a,b,c,d,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        PetscObject b ! PetscObject
        PetscSection c ! PetscSection
@@ -355,7 +355,7 @@
        PetscErrorCode z
        end subroutine PetscSectionSetClosureIndex
       subroutine PetscSectionGetClosureIndex(a,b,c,d,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        PetscObject b ! PetscObject
        PetscSection c ! PetscSection
@@ -363,7 +363,7 @@
        PetscErrorCode z
        end subroutine PetscSectionGetClosureIndex
       subroutine PetscSectionSetClosurePermutation(a,b,c,d,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        PetscObject b ! PetscObject
        PetscInt c ! PetscInt
@@ -371,7 +371,7 @@
        PetscErrorCode z
        end subroutine PetscSectionSetClosurePermutation
       subroutine PetscSectionGetClosurePermutation(a,b,c,d,e,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        PetscObject b ! PetscObject
        PetscInt c ! PetscInt
@@ -380,7 +380,7 @@
        PetscErrorCode z
        end subroutine PetscSectionGetClosurePermutation
       subroutine PetscSectionGetClosureInversePermutation(a,b,c,d,e,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscSection a ! PetscSection
        PetscObject b ! PetscObject
        PetscInt c ! PetscInt
@@ -439,7 +439,7 @@
        PetscErrorCode z
        end subroutine PetscSectionSymCopy
       subroutine PetscSectionSymDistribute(a,b,c,z)
-       import tPetscSectionSym,tPetscSF
+       import tPetscSF,tPetscSectionSym
        PetscSectionSym a ! PetscSectionSym
        PetscSF b ! PetscSF
        PetscSectionSym c ! PetscSectionSym

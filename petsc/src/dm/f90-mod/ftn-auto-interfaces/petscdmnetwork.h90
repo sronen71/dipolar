@@ -166,14 +166,14 @@
        PetscErrorCode z
        end subroutine DMNetworkHasJacobian
       subroutine DMNetworkEdgeSetMatrix(a,b,c,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        PetscInt b ! PetscInt
        Mat c (*) ! Mat
        PetscErrorCode z
        end subroutine DMNetworkEdgeSetMatrix
       subroutine DMNetworkVertexSetMatrix(a,b,c,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        PetscInt b ! PetscInt
        Mat c (*) ! Mat

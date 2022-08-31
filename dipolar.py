@@ -238,6 +238,7 @@ class DBEC:
         return scattering_energy
 
     def dipolar_energy(self, psi2):
+
         if self.dipole_length == 0:
             dipolar_energy = 0
         else:

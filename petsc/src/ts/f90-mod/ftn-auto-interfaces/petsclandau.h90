@@ -10,7 +10,7 @@
        PetscErrorCode z
        end subroutine DMPlexLandauPrintNorms
       subroutine DMPlexLandauCreateMassMatrix(a,b,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        Mat b ! Mat
        PetscErrorCode z

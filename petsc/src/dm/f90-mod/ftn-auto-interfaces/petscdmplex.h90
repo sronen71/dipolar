@@ -1,5 +1,5 @@
       subroutine DMPlexFindVertices(a,b,c,d,z)
-       import tDM,tIS,tVec
+       import tDM,tVec,tIS
        DM a ! DM
        Vec b ! Vec
        PetscReal c ! PetscReal
@@ -388,7 +388,7 @@
        PetscErrorCode z
        end subroutine DMPlexCreateDefaultReferenceTree
       subroutine DMPlexSetTree(a,b,c,d,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscInt c (*) ! PetscInt
@@ -396,7 +396,7 @@
        PetscErrorCode z
        end subroutine DMPlexSetTree
       subroutine DMPlexGetTree(a,b,c,d,e,f,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscInt c (*) ! PetscInt
@@ -414,7 +414,7 @@
        PetscErrorCode z
        end subroutine DMPlexGetTreeParent
       subroutine DMPlexTransferVecTree(a,b,c,d,e,f,g,h,i,j,z)
-       import tVec,tDM,tPetscSF
+       import tDM,tVec,tPetscSF
        DM a ! DM
        Vec b ! Vec
        DM c ! DM
@@ -593,7 +593,7 @@
        PetscErrorCode z
        end subroutine DMPlexCreateRigidBody
       subroutine DMPlexCreateRigidBodies(a,b,c,d,e,f,z)
-       import tDM,tDMLabel,tMatNullSpace
+       import tDM,tMatNullSpace,tDMLabel
        DM a ! DM
        PetscInt b ! PetscInt
        DMLabel c ! DMLabel
@@ -824,7 +824,7 @@
        PetscErrorCode z
        end subroutine DMPlexGetSimplexOrBoxCells
       subroutine DMPlexVecView1D(a,b,c,d,z)
-       import tPetscViewer,tDM,tVec
+       import tDM,tVec,tPetscViewer
        DM a ! DM
        PetscInt b ! PetscInt
        Vec c (*) ! Vec
@@ -832,32 +832,32 @@
        PetscErrorCode z
        end subroutine DMPlexVecView1D
       subroutine DMPlexTopologyView(a,b,z)
-       import tPetscViewer,tDM
+       import tDM,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        PetscErrorCode z
        end subroutine DMPlexTopologyView
       subroutine DMPlexCoordinatesView(a,b,z)
-       import tPetscViewer,tDM
+       import tDM,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        PetscErrorCode z
        end subroutine DMPlexCoordinatesView
       subroutine DMPlexLabelsView(a,b,z)
-       import tPetscViewer,tDM
+       import tDM,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        PetscErrorCode z
        end subroutine DMPlexLabelsView
       subroutine DMPlexSectionView(a,b,c,z)
-       import tPetscViewer,tDM
+       import tDM,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        DM c ! DM
        PetscErrorCode z
        end subroutine DMPlexSectionView
       subroutine DMPlexGlobalVectorView(a,b,c,d,z)
-       import tPetscViewer,tDM,tVec
+       import tDM,tVec,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        DM c ! DM
@@ -865,7 +865,7 @@
        PetscErrorCode z
        end subroutine DMPlexGlobalVectorView
       subroutine DMPlexLocalVectorView(a,b,c,d,z)
-       import tPetscViewer,tDM,tVec
+       import tDM,tVec,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        DM c ! DM
@@ -873,28 +873,28 @@
        PetscErrorCode z
        end subroutine DMPlexLocalVectorView
       subroutine DMPlexTopologyLoad(a,b,c,z)
-       import tPetscViewer,tDM,tPetscSF
+       import tDM,tPetscSF,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        PetscSF c ! PetscSF
        PetscErrorCode z
        end subroutine DMPlexTopologyLoad
       subroutine DMPlexCoordinatesLoad(a,b,c,z)
-       import tPetscViewer,tDM,tPetscSF
+       import tDM,tPetscSF,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        PetscSF c ! PetscSF
        PetscErrorCode z
        end subroutine DMPlexCoordinatesLoad
       subroutine DMPlexLabelsLoad(a,b,c,z)
-       import tPetscViewer,tDM,tPetscSF
+       import tDM,tPetscSF,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        PetscSF c ! PetscSF
        PetscErrorCode z
        end subroutine DMPlexLabelsLoad
       subroutine DMPlexSectionLoad(a,b,c,d,e,f,z)
-       import tPetscViewer,tDM,tPetscSF
+       import tDM,tPetscSF,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        DM c ! DM
@@ -904,7 +904,7 @@
        PetscErrorCode z
        end subroutine DMPlexSectionLoad
       subroutine DMPlexGlobalVectorLoad(a,b,c,d,e,z)
-       import tVec,tPetscViewer,tDM,tPetscSF
+       import tDM,tVec,tPetscSF,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        DM c ! DM
@@ -913,7 +913,7 @@
        PetscErrorCode z
        end subroutine DMPlexGlobalVectorLoad
       subroutine DMPlexLocalVectorLoad(a,b,c,d,e,z)
-       import tVec,tPetscViewer,tDM,tPetscSF
+       import tDM,tVec,tPetscSF,tPetscViewer
        DM a ! DM
        PetscViewer b ! PetscViewer
        DM c ! DM
@@ -922,7 +922,7 @@
        PetscErrorCode z
        end subroutine DMPlexLocalVectorLoad
       subroutine DMPlexGetSubdomainSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
@@ -970,7 +970,7 @@
        PetscErrorCode z
        end subroutine DMPlexGetConeRecursiveVertices
       subroutine DMPlexGetConeRecursive(a,b,c,d,e,z)
-       import tPetscSection,tDM,tIS
+       import tDM,tIS,tPetscSection
        DM a ! DM
        IS b ! IS
        PetscInt c ! PetscInt
@@ -979,7 +979,7 @@
        PetscErrorCode z
        end subroutine DMPlexGetConeRecursive
       subroutine DMPlexRestoreConeRecursive(a,b,c,d,e,z)
-       import tPetscSection,tDM,tIS
+       import tDM,tIS,tPetscSection
        DM a ! DM
        IS b ! IS
        PetscInt c ! PetscInt
@@ -1131,7 +1131,7 @@
        PetscErrorCode z
        end subroutine DMPlexSetCellType
       subroutine DMPlexSetClosurePermutationTensor(a,b,c,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscInt b ! PetscInt
        PetscSection c ! PetscSection
@@ -1169,7 +1169,7 @@
        PetscErrorCode z
        end subroutine DMPlexCreateRankField
       subroutine DMPlexCreateLabelField(a,b,c,z)
-       import tDM,tDMLabel,tVec
+       import tDM,tVec,tDMLabel
        DM a ! DM
        DMLabel b ! DMLabel
        Vec c ! Vec
@@ -1216,7 +1216,7 @@
        PetscErrorCode z
        end subroutine DMPlexCheckCellShape
       subroutine DMPlexComputeOrthogonalQuality(a,b,c,d,e,z)
-       import tDM,tDMLabel,tVec
+       import tDM,tVec,tDMLabel
        DM a ! DM
        PetscFV b ! PetscFV
        PetscReal c ! PetscReal
@@ -1237,14 +1237,14 @@
        PetscErrorCode z
        end subroutine DMPlexSetRegularRefinement
       subroutine DMPlexGetAnchors(a,b,c,z)
-       import tPetscSection,tDM,tIS
+       import tDM,tIS,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        IS c ! IS
        PetscErrorCode z
        end subroutine DMPlexGetAnchors
       subroutine DMPlexSetAnchors(a,b,c,z)
-       import tPetscSection,tDM,tIS
+       import tDM,tIS,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        IS c ! IS
@@ -1275,7 +1275,7 @@
        PetscErrorCode z
        end subroutine DMPlexGetGlobalToNaturalSF
       subroutine DMPlexCreateGlobalToNaturalSF(a,b,c,d,z)
-       import tPetscSection,tDM,tPetscSF
+       import tDM,tPetscSF,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscSF c ! PetscSF
@@ -1401,7 +1401,7 @@
        PetscErrorCode z
        end subroutine DMPlexGetAdjacency
       subroutine DMPlexCreateTwoSidedProcessSF(a,b,c,d,e,f,g,h,z)
-       import tPetscSection,tDM,tIS,tPetscSF
+       import tDM,tPetscSF,tIS,tPetscSection
        DM a ! DM
        PetscSF b ! PetscSF
        PetscSection c ! PetscSection
@@ -1413,7 +1413,7 @@
        PetscErrorCode z
        end subroutine DMPlexCreateTwoSidedProcessSF
       subroutine DMPlexDistributeOwnership(a,b,c,d,e,z)
-       import tPetscSection,tDM,tIS
+       import tDM,tIS,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        IS c ! IS
@@ -1429,7 +1429,7 @@
        PetscErrorCode z
        end subroutine DMPlexStratifyMigrationSF
       subroutine DMPlexDistributeField(a,b,c,d,e,f,z)
-       import tVec,tDM,tPetscSection,tPetscSF
+       import tDM,tVec,tPetscSF,tPetscSection
        DM a ! DM
        PetscSF b ! PetscSF
        PetscSection c ! PetscSection
@@ -1439,7 +1439,7 @@
        PetscErrorCode z
        end subroutine DMPlexDistributeField
       subroutine DMPlexDistributeFieldIS(a,b,c,d,e,f,z)
-       import tPetscSection,tDM,tIS,tPetscSF
+       import tDM,tPetscSF,tIS,tPetscSection
        DM a ! DM
        PetscSF b ! PetscSF
        PetscSection c ! PetscSection
@@ -1525,7 +1525,7 @@
        PetscErrorCode z
        end subroutine DMPlexReorderGetDefault
       subroutine DMPlexCreateProcessSF(a,b,c,d,z)
-       import tDM,tIS,tPetscSF
+       import tDM,tPetscSF,tIS
        DM a ! DM
        PetscSF b ! PetscSF
        IS c ! IS
@@ -1627,7 +1627,7 @@
        PetscErrorCode z
        end subroutine DMPlexCreateExodus
       subroutine DMPlexCreateClosureIndex(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
@@ -1638,7 +1638,7 @@
        PetscErrorCode z
        end subroutine DMPlexCheckInterfaceCones
       subroutine DMPlexCreateGmsh(a,b,c,d,z)
-       import tPetscViewer,tDM
+       import tDM,tPetscViewer
        MPI_Comm a ! MPI_Comm
        PetscViewer b ! PetscViewer
        PetscBool c ! PetscBool
@@ -1646,7 +1646,7 @@
        PetscErrorCode z
        end subroutine DMPlexCreateGmsh
       subroutine PetscPartitionerDMPlexPartition(a,b,c,d,e,z)
-       import tPetscSection,tDM,tIS
+       import tDM,tIS,tPetscSection
        PetscPartitioner a ! PetscPartitioner
        DM b ! DM
        PetscSection c ! PetscSection
@@ -1685,7 +1685,7 @@
        PetscErrorCode z
        end subroutine DMPlexPartitionLabelPropagate
       subroutine DMPlexPartitionLabelInvert(a,b,c,d,z)
-       import tDM,tDMLabel,tPetscSF
+       import tDM,tPetscSF,tDMLabel
        DM a ! DM
        DMLabel b ! DMLabel
        PetscSF c ! PetscSF
@@ -1693,7 +1693,7 @@
        PetscErrorCode z
        end subroutine DMPlexPartitionLabelInvert
       subroutine DMPlexPartitionLabelCreateSF(a,b,c,z)
-       import tDM,tDMLabel,tPetscSF
+       import tDM,tPetscSF,tDMLabel
        DM a ! DM
        DMLabel b ! DMLabel
        PetscSF c ! PetscSF
@@ -1720,7 +1720,7 @@
        PetscErrorCode z
        end subroutine DMPlexTransformSetFromOptions
       subroutine DMPlexTransformSetDimensions(a,b,c,z)
-       import tDMPlexTransform,tDM
+       import tDM,tDMPlexTransform
        DMPlexTransform a ! DMPlexTransform
        DM b ! DM
        DM c ! DM

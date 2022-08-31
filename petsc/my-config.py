@@ -17,6 +17,7 @@ if __name__ == '__main__':
     '--download-openmpi=1',
     '--with-petsc4py',
     #'--with-precision=single',
+    #'--download-mpich=1',
     '--with-cuda=1',
     '--with-debugging=0',
     '--COPTFLAGS= -g -O3 -march=native',

@@ -1,12 +1,12 @@
       subroutine DMCreateAggregates(a,b,c,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        DM b ! DM
        Mat c ! Mat
        PetscErrorCode z
        end subroutine DMCreateAggregates
       subroutine DMDACreateAggregates(a,b,c,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        DM b ! DM
        Mat c ! Mat
@@ -27,7 +27,7 @@
        PetscErrorCode z
        end subroutine DMDAGetLogicalCoordinate
       subroutine DMDAGetRay(a,b,c,d,e,z)
-       import tVecScatter,tDM,tVec
+       import tDM,tVec,tVecScatter
        DM a ! DM
        DMDirection b ! DMDirection
        PetscInt c ! PetscInt
@@ -336,13 +336,13 @@
        PetscErrorCode z
        end subroutine DMDASetGLLCoordinates
       subroutine DMDAGlobalToNaturalAllCreate(a,b,z)
-       import tVecScatter,tDM
+       import tDM,tVecScatter
        DM a ! DM
        VecScatter b ! VecScatter
        PetscErrorCode z
        end subroutine DMDAGlobalToNaturalAllCreate
       subroutine DMDANaturalAllToGlobalCreate(a,b,z)
-       import tVecScatter,tDM
+       import tDM,tVecScatter
        DM a ! DM
        VecScatter b ! VecScatter
        PetscErrorCode z

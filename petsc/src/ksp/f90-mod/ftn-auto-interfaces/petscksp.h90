@@ -184,7 +184,7 @@
        PetscErrorCode z
        end subroutine KSPBCGSLSetEll
       subroutine MatLMVMUpdate(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -202,7 +202,7 @@
        PetscErrorCode z
        end subroutine MatLMVMSetJ0Scale
       subroutine MatLMVMSetJ0Diag(a,b,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        PetscErrorCode z
@@ -220,7 +220,7 @@
        PetscErrorCode z
        end subroutine MatLMVMSetJ0PC
       subroutine MatLMVMSetJ0KSP(a,b,z)
-       import tMat,tKSP
+       import tKSP,tMat
        Mat a ! Mat
        KSP b ! KSP
        PetscErrorCode z
@@ -238,20 +238,20 @@
        PetscErrorCode z
        end subroutine MatLMVMGetJ0PC
       subroutine MatLMVMGetJ0KSP(a,b,z)
-       import tMat,tKSP
+       import tKSP,tMat
        Mat a ! Mat
        KSP b ! KSP
        PetscErrorCode z
        end subroutine MatLMVMGetJ0KSP
       subroutine MatLMVMApplyJ0Fwd(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine MatLMVMApplyJ0Fwd
       subroutine MatLMVMApplyJ0Inv(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -264,7 +264,7 @@
        PetscErrorCode z
        end subroutine MatLMVMIsAllocated
       subroutine MatLMVMAllocate(a,b,c,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -348,13 +348,13 @@
        PetscErrorCode z
        end subroutine KSPPIPEGCRGetTruncationType
       subroutine KSPHPDDMSetDeflationMat(a,b,z)
-       import tMat,tKSP
+       import tKSP,tMat
        KSP a ! KSP
        Mat b ! Mat
        PetscErrorCode z
        end subroutine KSPHPDDMSetDeflationMat
       subroutine KSPHPDDMGetDeflationMat(a,b,z)
-       import tMat,tKSP
+       import tKSP,tMat
        KSP a ! KSP
        Mat b ! Mat
        PetscErrorCode z
@@ -409,13 +409,13 @@
        PetscErrorCode z
        end subroutine KSPSetUseFischerGuess
       subroutine KSPSetGuess(a,b,z)
-       import tKSPGuess,tKSP
+       import tKSP,tKSPGuess
        KSP a ! KSP
        KSPGuess b ! KSPGuess
        PetscErrorCode z
        end subroutine KSPSetGuess
       subroutine KSPGetGuess(a,b,z)
-       import tKSPGuess,tKSP
+       import tKSP,tKSPGuess
        KSP a ! KSP
        KSPGuess b ! KSPGuess
        PetscErrorCode z
@@ -463,14 +463,14 @@
        PetscErrorCode z
        end subroutine KSPGetNormType
       subroutine KSPSetOperators(a,b,c,z)
-       import tMat,tKSP
+       import tKSP,tMat
        KSP a ! KSP
        Mat b ! Mat
        Mat c ! Mat
        PetscErrorCode z
        end subroutine KSPSetOperators
       subroutine KSPGetOperators(a,b,c,z)
-       import tMat,tKSP
+       import tKSP,tMat
        KSP a ! KSP
        Mat b ! Mat
        Mat c ! Mat
@@ -562,7 +562,7 @@
        PetscErrorCode z
        end subroutine KSPSolveTranspose
       subroutine KSPMatSolve(a,b,c,z)
-       import tMat,tKSP
+       import tKSP,tMat
        KSP a ! KSP
        Mat b ! Mat
        Mat c ! Mat
@@ -699,13 +699,13 @@
        PetscErrorCode z
        end subroutine KSPGetSolution
       subroutine KSPSetPC(a,b,z)
-       import tPC,tKSP
+       import tKSP,tPC
        KSP a ! KSP
        PC b ! PC
        PetscErrorCode z
        end subroutine KSPSetPC
       subroutine KSPGetPC(a,b,z)
-       import tPC,tKSP
+       import tKSP,tPC
        KSP a ! KSP
        PC b ! PC
        PetscErrorCode z
@@ -809,7 +809,7 @@
        PetscErrorCode z
        end subroutine KSPGetConvergedReason
       subroutine KSPSetDM(a,b,z)
-       import tDM,tKSP
+       import tKSP,tDM
        KSP a ! KSP
        DM b ! DM
        PetscErrorCode z
@@ -821,13 +821,13 @@
        PetscErrorCode z
        end subroutine KSPSetDMActive
       subroutine KSPGetDM(a,b,z)
-       import tDM,tKSP
+       import tKSP,tDM
        KSP a ! KSP
        DM b ! DM
        PetscErrorCode z
        end subroutine KSPGetDM
       subroutine KSPCheckSolve(a,b,c,z)
-       import tPC,tKSP,tVec
+       import tKSP,tVec,tPC
        KSP a ! KSP
        PC b ! PC
        Vec c ! Vec
@@ -856,14 +856,14 @@
        PetscErrorCode z
        end subroutine KSPGuessCreate
       subroutine KSPGuessUpdate(a,b,c,z)
-       import tKSPGuess,tVec
+       import tVec,tKSPGuess
        KSPGuess a ! KSPGuess
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine KSPGuessUpdate
       subroutine KSPGuessFormGuess(a,b,c,z)
-       import tKSPGuess,tVec
+       import tVec,tKSPGuess
        KSPGuess a ! KSPGuess
        Vec b ! Vec
        Vec c ! Vec
@@ -875,7 +875,7 @@
        PetscErrorCode z
        end subroutine KSPGuessSetUp
       subroutine KSPComputeOperator(a,b,c,z)
-       import tMat,tKSP
+       import tKSP,tMat
        KSP a ! KSP
        MatType b ! MatType
        Mat c ! Mat
@@ -964,7 +964,7 @@
        PetscErrorCode z
        end subroutine MatCreateLMVMBadBroyden
       subroutine KSPFETIDPSetPressureOperator(a,b,z)
-       import tMat,tKSP
+       import tKSP,tMat
        KSP a ! KSP
        Mat b ! Mat
        PetscErrorCode z
@@ -976,13 +976,13 @@
        PetscErrorCode z
        end subroutine KSPFETIDPGetInnerKSP
       subroutine KSPFETIDPGetInnerBDDC(a,b,z)
-       import tPC,tKSP
+       import tKSP,tPC
        KSP a ! KSP
        PC b ! PC
        PetscErrorCode z
        end subroutine KSPFETIDPGetInnerBDDC
       subroutine KSPFETIDPSetInnerBDDC(a,b,z)
-       import tPC,tKSP
+       import tKSP,tPC
        KSP a ! KSP
        PC b ! PC
        PetscErrorCode z
@@ -1072,13 +1072,13 @@
        PetscErrorCode z
        end subroutine MatSchurComplementSetSubMatrices
       subroutine MatSchurComplementGetKSP(a,b,z)
-       import tMat,tKSP
+       import tKSP,tMat
        Mat a ! Mat
        KSP b ! KSP
        PetscErrorCode z
        end subroutine MatSchurComplementGetKSP
       subroutine MatSchurComplementSetKSP(a,b,z)
-       import tMat,tKSP
+       import tKSP,tMat
        Mat a ! Mat
        KSP b ! KSP
        PetscErrorCode z
@@ -1100,7 +1100,7 @@
        PetscErrorCode z
        end subroutine MatSchurComplementComputeExplicitOperator
       subroutine MatGetSchurComplement(a,b,c,d,e,f,g,h,i,j,z)
-       import tMat,tIS
+       import tIS,tMat
        Mat a ! Mat
        IS b ! IS
        IS c ! IS

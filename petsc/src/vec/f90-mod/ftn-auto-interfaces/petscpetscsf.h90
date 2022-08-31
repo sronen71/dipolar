@@ -21,7 +21,7 @@
        PetscErrorCode z
        end subroutine VecScatterSetFromOptions
       subroutine VecScatterCreate(a,b,c,d,e,z)
-       import tVecScatter,tIS,tVec
+       import tIS,tVec,tVecScatter
        Vec a ! Vec
        IS b ! IS
        Vec c ! Vec
@@ -30,7 +30,7 @@
        PetscErrorCode z
        end subroutine VecScatterCreate
       subroutine VecScatterBegin(a,b,c,d,e,z)
-       import tVecScatter,tVec
+       import tVec,tVecScatter
        VecScatter a ! VecScatter
        Vec b ! Vec
        Vec c ! Vec
@@ -39,7 +39,7 @@
        PetscErrorCode z
        end subroutine VecScatterBegin
       subroutine VecScatterEnd(a,b,c,d,e,z)
-       import tVecScatter,tVec
+       import tVec,tVecScatter
        VecScatter a ! VecScatter
        Vec b ! Vec
        Vec c ! Vec
@@ -132,7 +132,7 @@
        PetscErrorCode z
        end subroutine PetscSFConcatenate
       subroutine PetscSFSetGraphSection(a,b,c,z)
-       import tPetscSection,tPetscSF
+       import tPetscSF,tPetscSection
        PetscSF a ! PetscSF
        PetscSection b ! PetscSection
        PetscSection c ! PetscSection

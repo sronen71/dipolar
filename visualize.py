@@ -1,5 +1,8 @@
+import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
+
+matplotlib.use("WebAgg")
 
 
 def plot_one(psi):
@@ -8,8 +11,8 @@ def plot_one(psi):
     plt.show()
 
 
-def plot_image(ax, xmin, xmax, out, aho, limx):
-    unit = 2 * limx * aho * 1e6 / out.shape[0]
+def plot_image(ax, xmin, xmax, out, limx):
+    unit = 2 * limx / out.shape[0]
     mid_z = out.shape[2] // 2
     width = xmax - xmin
     ax.imshow(
@@ -30,20 +33,21 @@ def plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_typ
     for i in range(wavefunctions.shape[0]):  # spacings
         for j in range(wavefunctions.shape[1]):  # depths
 
-            lspace = lattice_spacings[i] * 1e6 * aho
+            lspace = lattice_spacings[i]
             ldepth = lattice_depths[j]
             out = abs(wavefunctions[i, j]) ** 2
-            ax = axs[i, j]
-            plot_image(ax, xmin_plot, xmax_plot, out, aho, limx)
+            ax = axs[j, i]
+            plot_image(ax, xmin_plot, xmax_plot, out, limx)
             if j == 0:
-                ax.set_ylabel(f"{lspace:1.2f} um", fontsize=70)
+                ax.set_title(f"{lspace:1.2f} $a_{{ho}}$", fontsize=70)
+            if i == 0:
+                ax.set_ylabel(rf"{ldepth:1.2f} $\hbar \omega$", fontsize=70)
+                ax.tick_params(axis="y", labelsize=50)
             else:
                 ax.set_yticks([])
-            if i == 0:
-                ax.set_title(rf"{ldepth:1.2f} $\hbar \omega$", fontsize=70)
 
-            if i == (wavefunctions.shape[0] - 1):
-                ax.set_xlabel("x (um)", fontsize=70)
+            if j == (wavefunctions.shape[1] - 1):
+                ax.set_xlabel("x ($a_{{ho}}$)", fontsize=70)
                 ax.tick_params(axis="x", labelsize=50)
             else:
                 ax.set_xticks([])

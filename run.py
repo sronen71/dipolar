@@ -11,15 +11,18 @@ from perlin_noise import perlin_noise
 from visualize import plot_one, plot_table
 
 EXCITATIONS = False
+SCAN = True
 
 
-def scan(dbec, aho):
+def scan(dbec, aho, spacing_linspace=[1.0, 5.0, 6], depths_linspace=[0.1, 4.0, 6]):
+    # spacing_linspace: [start,end,num] in units of aho
+    # dephts_linspace: [start,end,num] in units of hbar omega
     sigmas = np.array([2, 2, 2]) / np.sqrt(2)
 
-    num_spacings = 6  #
-    num_depths = 5  #
-    lattice_spacings = np.linspace(0.4, 2.4, num_spacings) * 1e-6 / aho  # convert [1e-6 m] -> [aho]
-    lattice_depths = np.linspace(0.1, 4.0, num_depths)  # [hbar omega]
+    num_spacings = spacing_linspace[2]
+    num_depths = depths_linspace[2]
+    lattice_spacings = np.linspace(*spacing_linspace)  # aho
+    lattice_depths = np.linspace(*depths_linspace)  # [hbar omega]
     nx = dbec.grid.nx
     nz = dbec.grid.nz
 
@@ -73,12 +76,12 @@ def main():
     omega_x = 2 * np.pi * 125  # Trap radial frequency, in rad/s
     aho = np.sqrt(constants.hbar / mass / omega_x)  # oscillator length in meters
     omegas = np.array([1.0, 1.0, 2.0])  # trap frequencies in units of omega_x
-    num_atoms = 400 * 1e3  # Number of atoms 100
-    scattering_length = 86 * constants.a0
+    num_atoms = 800 * 1e3  # Number of atoms 100
+    scattering_length = 89 * constants.a0
     dipole_length = 131 * constants.a0
 
-    lattice_constant = 2.83  # in units of aho
-    lattice_depth = 0.4  # in units of hbar*omegar_r
+    lattice_constant = 1  # in units of aho
+    lattice_depth = 0.0  # in units of hbar*omegar_r
     lattice_type = "square"
     potential = dipolar.Potential(
         omegas,
@@ -120,28 +123,28 @@ def main():
         precision=precision,
     )
 
-    # scan(dbec, aho)  # Uncomment this to create subplot tables
+    if SCAN:
 
-    sigmas = np.array([2, 2, 2]) / np.sqrt(2)
-    noise = perlin_noise(nx, nx, nz, scale=8)  # make sure nx,nz are divisable by scale
-    # noise = 0
-    # noise = np.random.randn(nx, nx, nz)
-    psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
-    energy, psi_opt = dbec.optimize(psi1)
+        scan(
+            dbec, aho, spacing_linspace=[1, 5, 6], depths_linspace=[0.1, 4, 6]
+        )  # Uncomment this to create subplot tables
+    else:
+        sigmas = np.array([2, 2, 2]) / np.sqrt(2)
+        noise = perlin_noise(nx, nx, nz, scale=8)  # make sure nx,nz are divisable by scale
+        psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
+        energy, psi_opt = dbec.optimize(psi1)
 
-    print("Energy", energy)
-    plot_one(psi_opt)
+        print("Energy", energy)
+        plot_one(psi_opt)
 
-    if EXCITATIONS:
-        print("Calc excitations...")
-        # eigenvalues, eigenvectors = dbec.calc_excitations_arpack(psi_opt,
-        # k=10, maxiter=40000, tol=1e-4)
-        if precision == "float64":
-            eigenvalues, eigenvectors = dbec.calc_excitations_slepc(
-                psi_opt, k=20, bk=300, maxiter=20000, tol=1e-6
-            )
+        if EXCITATIONS:
+            print("Calc excitations...")
+            if precision == "float64":
+                eigenvalues, eigenvectors = dbec.calc_excitations_slepc(
+                    psi_opt, k=20, bk=300, maxiter=20000, tol=1e-6
+                )
 
-            logging.info(eigenvalues)
+                logging.info(eigenvalues)
 
 
 if __name__ == "__main__":

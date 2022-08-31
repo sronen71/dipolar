@@ -109,7 +109,7 @@
        PetscErrorCode z
        end subroutine SNESFASCycleGetInjection
       subroutine SNESFASCycleGetRScale(a,b,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
@@ -163,7 +163,7 @@
        PetscErrorCode z
        end subroutine SNESFASGetInjection
       subroutine SNESFASSetRScale(a,b,c,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -227,13 +227,13 @@
        PetscErrorCode z
        end subroutine SNESFASSetGalerkin
       subroutine SNESFASCreateCoarseVec(a,b,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
        end subroutine SNESFASCreateCoarseVec
       subroutine SNESFASRestrict(a,b,c,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec

@@ -61,7 +61,7 @@
        PetscErrorCode z
        end subroutine DMLocalToLocalEndDefaultShell
       subroutine DMShellSetMatrix(a,b,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        Mat b ! Mat
        PetscErrorCode z
@@ -85,19 +85,19 @@
        PetscErrorCode z
        end subroutine DMShellSetLocalVector
       subroutine DMShellSetGlobalToLocalVecScatter(a,b,z)
-       import tVecScatter,tDM
+       import tDM,tVecScatter
        DM a ! DM
        VecScatter b ! VecScatter
        PetscErrorCode z
        end subroutine DMShellSetGlobalToLocalVecScatter
       subroutine DMShellSetLocalToGlobalVecScatter(a,b,z)
-       import tVecScatter,tDM
+       import tDM,tVecScatter
        DM a ! DM
        VecScatter b ! VecScatter
        PetscErrorCode z
        end subroutine DMShellSetLocalToGlobalVecScatter
       subroutine DMShellSetLocalToLocalVecScatter(a,b,z)
-       import tVecScatter,tDM
+       import tDM,tVecScatter
        DM a ! DM
        VecScatter b ! VecScatter
        PetscErrorCode z
@@ -164,7 +164,7 @@
        PetscErrorCode z
        end subroutine PetscPartitionerDestroy
       subroutine PetscPartitionerPartition(a,b,c,d,e,f,g,h,i,z)
-       import tPetscSection,tIS
+       import tIS,tPetscSection
        PetscPartitioner a ! PetscPartitioner
        PetscInt b ! PetscInt
        PetscInt c ! PetscInt
@@ -252,26 +252,26 @@
        PetscErrorCode z
        end subroutine DMSetCoordinateDim
       subroutine DMGetCoordinateSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
        end subroutine DMGetCoordinateSection
       subroutine DMSetCoordinateSection(a,b,c,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscInt b ! PetscInt
        PetscSection c ! PetscSection
        PetscErrorCode z
        end subroutine DMSetCoordinateSection
       subroutine DMGetCellCoordinateSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
        end subroutine DMGetCellCoordinateSection
       subroutine DMSetCellCoordinateSection(a,b,c,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscInt b ! PetscInt
        PetscSection c ! PetscSection
@@ -319,7 +319,7 @@
        PetscErrorCode z
        end subroutine DMGetCoordinatesLocalNoncollective
       subroutine DMGetCoordinatesLocalTuple(a,b,c,d,z)
-       import tPetscSection,tDM,tIS,tVec
+       import tDM,tVec,tIS,tPetscSection
        DM a ! DM
        IS b ! IS
        PetscSection c ! PetscSection
@@ -376,7 +376,7 @@
        PetscErrorCode z
        end subroutine DMProjectCoordinates
       subroutine DMLocatePoints(a,b,c,d,z)
-       import tVec,tDM,tPetscSF
+       import tDM,tVec,tPetscSF
        DM a ! DM
        Vec b ! Vec
        DMPointLocationType c ! DMPointLocationType
@@ -408,13 +408,13 @@
        PetscErrorCode z
        end subroutine VecSetDM
       subroutine MatGetDM(a,b,z)
-       import tMat,tDM
+       import tDM,tMat
        Mat a ! Mat
        DM b ! DM
        PetscErrorCode z
        end subroutine MatGetDM
       subroutine MatSetDM(a,b,z)
-       import tMat,tDM
+       import tDM,tMat
        Mat a ! Mat
        DM b ! DM
        PetscErrorCode z
@@ -454,7 +454,7 @@
        PetscErrorCode z
        end subroutine DMGetBlockSize
       subroutine DMCreateInterpolationScale(a,b,c,d,z)
-       import tMat,tDM,tVec
+       import tDM,tVec,tMat
        DM a ! DM
        DM b ! DM
        Mat c ! Mat
@@ -462,21 +462,21 @@
        PetscErrorCode z
        end subroutine DMCreateInterpolationScale
       subroutine DMCreateRestriction(a,b,c,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        DM b ! DM
        Mat c ! Mat
        PetscErrorCode z
        end subroutine DMCreateRestriction
       subroutine DMCreateInjection(a,b,c,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        DM b ! DM
        Mat c ! Mat
        PetscErrorCode z
        end subroutine DMCreateInjection
       subroutine DMCreateMassMatrix(a,b,c,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        DM b ! DM
        Mat c ! Mat
@@ -496,7 +496,7 @@
        PetscErrorCode z
        end subroutine DMCreateColoring
       subroutine DMCreateMatrix(a,b,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        Mat b ! Mat
        PetscErrorCode z
@@ -536,14 +536,14 @@
        PetscErrorCode z
        end subroutine DMRefine
       subroutine DMInterpolate(a,b,c,z)
-       import tMat,tDM
+       import tDM,tMat
        DM a ! DM
        Mat b ! Mat
        DM c ! DM
        PetscErrorCode z
        end subroutine DMInterpolate
       subroutine DMInterpolateSolution(a,b,c,d,e,z)
-       import tMat,tDM,tVec
+       import tDM,tVec,tMat
        DM a ! DM
        DM b ! DM
        Mat c ! Mat
@@ -648,7 +648,7 @@
        PetscErrorCode z
        end subroutine DMCoarsen
       subroutine DMRestrict(a,b,c,d,e,z)
-       import tMat,tDM,tVec
+       import tDM,tVec,tMat
        DM a ! DM
        Mat b ! Mat
        Vec c ! Vec
@@ -657,7 +657,7 @@
        PetscErrorCode z
        end subroutine DMRestrict
       subroutine DMSubDomainRestrict(a,b,c,d,z)
-       import tVecScatter,tDM
+       import tDM,tVecScatter
        DM a ! DM
        VecScatter b ! VecScatter
        VecScatter c ! VecScatter
@@ -701,31 +701,31 @@
        PetscErrorCode z
        end subroutine DMHasCreateInjection
       subroutine DMGetSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
        end subroutine DMGetSection
       subroutine DMGetLocalSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
        end subroutine DMGetLocalSection
       subroutine DMSetSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
        end subroutine DMSetSection
       subroutine DMSetLocalSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
        end subroutine DMSetLocalSection
       subroutine DMGetDefaultConstraints(a,b,c,d,z)
-       import tMat,tPetscSection,tDM,tVec
+       import tDM,tVec,tMat,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        Mat c ! Mat
@@ -733,7 +733,7 @@
        PetscErrorCode z
        end subroutine DMGetDefaultConstraints
       subroutine DMSetDefaultConstraints(a,b,c,d,z)
-       import tMat,tPetscSection,tDM,tVec
+       import tDM,tVec,tMat,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        Mat c ! Mat
@@ -741,13 +741,13 @@
        PetscErrorCode z
        end subroutine DMSetDefaultConstraints
       subroutine DMGetGlobalSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
        end subroutine DMGetGlobalSection
       subroutine DMSetGlobalSection(a,b,z)
-       import tPetscSection,tDM
+       import tDM,tPetscSection
        DM a ! DM
        PetscSection b ! PetscSection
        PetscErrorCode z
@@ -1067,7 +1067,7 @@
        PetscErrorCode z
        end subroutine DMSetFineDM
       subroutine MatFDColoringUseDM(a,b,z)
-       import tMat,tMatFDColoring
+       import tMatFDColoring,tMat
        Mat a ! Mat
        MatFDColoring b ! MatFDColoring
        PetscErrorCode z
@@ -1105,7 +1105,7 @@
        PetscErrorCode z
        end subroutine DMGetNumAuxiliaryVec
       subroutine DMGetAuxiliaryVec(a,b,c,d,e,z)
-       import tDM,tDMLabel,tVec
+       import tDM,tVec,tDMLabel
        DM a ! DM
        DMLabel b ! DMLabel
        PetscInt c ! PetscInt
@@ -1114,7 +1114,7 @@
        PetscErrorCode z
        end subroutine DMGetAuxiliaryVec
       subroutine DMSetAuxiliaryVec(a,b,c,d,e,z)
-       import tDM,tDMLabel,tVec
+       import tDM,tVec,tDMLabel
        DM a ! DM
        DMLabel b ! DMLabel
        PetscInt c ! PetscInt

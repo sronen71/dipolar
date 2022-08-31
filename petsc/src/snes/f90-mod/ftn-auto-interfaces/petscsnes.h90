@@ -41,7 +41,7 @@
        PetscErrorCode z
        end subroutine SNESNASMGetType
       subroutine SNESNASMSetSubdomains(a,b,c,d,e,f,z)
-       import tVecScatter,tSNES
+       import tSNES,tVecScatter
        SNES a ! SNES
        PetscInt b ! PetscInt
        SNES c (*) ! SNES
@@ -51,7 +51,7 @@
        PetscErrorCode z
        end subroutine SNESNASMSetSubdomains
       subroutine SNESNASMGetSubdomains(a,b,c,d,e,f,z)
-       import tVecScatter,tSNES
+       import tSNES,tVecScatter
        SNES a ! SNES
        PetscInt b ! PetscInt
        SNES c (*) ! SNES
@@ -61,7 +61,7 @@
        PetscErrorCode z
        end subroutine SNESNASMGetSubdomains
       subroutine SNESNASMGetSubdomainVecs(a,b,c,d,e,f,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -102,7 +102,7 @@
        PetscErrorCode z
        end subroutine SNESNASMGetNumber
       subroutine SNESNASMSetWeight(a,b,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
@@ -152,7 +152,7 @@
        PetscErrorCode z
        end subroutine SNESCompositeSetDamping
       subroutine SNESApplyNPC(a,b,c,d,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
@@ -160,7 +160,7 @@
        PetscErrorCode z
        end subroutine SNESApplyNPC
       subroutine SNESGetNPCFunction(a,b,c,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        PetscReal c ! PetscReal
@@ -368,28 +368,28 @@
        PetscErrorCode z
        end subroutine SNESGetSolutionNorm
       subroutine SNESComputeFunction(a,b,c,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine SNESComputeFunction
       subroutine SNESComputeMFFunction(a,b,c,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine SNESComputeMFFunction
       subroutine SNESComputeNGS(a,b,c,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine SNESComputeNGS
       subroutine SNESComputeJacobian(a,b,c,d,z)
-       import tMat,tSNES,tVec
+       import tVec,tMat,tSNES
        SNES a ! SNES
        Vec b ! Vec
        Mat c ! Mat
@@ -548,26 +548,26 @@
        PetscErrorCode z
        end subroutine SNESConvergedReasonViewFromOptions
       subroutine SNESSolve(a,b,c,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine SNESSolve
       subroutine SNESSetSolution(a,b,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
        end subroutine SNESSetSolution
       subroutine SNESGetSolution(a,b,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
        end subroutine SNESGetSolution
       subroutine SNESGetSolutionUpdate(a,b,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
@@ -830,7 +830,7 @@
        PetscErrorCode z
        end subroutine SNESNCGSetType
       subroutine SNESVISetVariableBounds(a,b,c,z)
-       import tSNES,tVec
+       import tVec,tSNES
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec

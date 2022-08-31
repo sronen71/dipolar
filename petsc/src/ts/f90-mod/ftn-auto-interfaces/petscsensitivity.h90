@@ -1,5 +1,5 @@
       subroutine TSSetCostGradients(a,b,c,d,z)
-       import tTS,tVec
+       import tVec,tTS
        TS a ! TS
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -7,7 +7,7 @@
        PetscErrorCode z
        end subroutine TSSetCostGradients
       subroutine TSGetCostGradients(a,b,c,d,z)
-       import tTS,tVec
+       import tVec,tTS
        TS a ! TS
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -15,7 +15,7 @@
        PetscErrorCode z
        end subroutine TSGetCostGradients
       subroutine TSSetCostHessianProducts(a,b,c,d,e,z)
-       import tTS,tVec
+       import tVec,tTS
        TS a ! TS
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -24,7 +24,7 @@
        PetscErrorCode z
        end subroutine TSSetCostHessianProducts
       subroutine TSGetCostHessianProducts(a,b,c,d,e,z)
-       import tTS,tVec
+       import tVec,tTS
        TS a ! TS
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -60,7 +60,7 @@
        PetscErrorCode z
        end subroutine TSAdjointSetSteps
       subroutine TSAdjointComputeDRDYFunction(a,b,c,d,z)
-       import tTS,tVec
+       import tVec,tTS
        TS a ! TS
        PetscReal b ! PetscReal
        Vec c ! Vec
@@ -68,7 +68,7 @@
        PetscErrorCode z
        end subroutine TSAdjointComputeDRDYFunction
       subroutine TSAdjointComputeDRDPFunction(a,b,c,d,z)
-       import tTS,tVec
+       import tVec,tTS
        TS a ! TS
        PetscReal b ! PetscReal
        Vec c ! Vec
@@ -101,14 +101,14 @@
        PetscErrorCode z
        end subroutine TSForwardReset
       subroutine TSForwardSetIntegralGradients(a,b,c,z)
-       import tTS,tVec
+       import tVec,tTS
        TS a ! TS
        PetscInt b ! PetscInt
        Vec c ! Vec
        PetscErrorCode z
        end subroutine TSForwardSetIntegralGradients
       subroutine TSForwardGetIntegralGradients(a,b,c,z)
-       import tTS,tVec
+       import tVec,tTS
        TS a ! TS
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -166,7 +166,7 @@
        PetscErrorCode z
        end subroutine TSGetQuadratureTS
       subroutine TSComputeSNESJacobian(a,b,c,d,z)
-       import tMat,tTS,tVec
+       import tVec,tMat,tTS
        TS a ! TS
        Vec b ! Vec
        Mat c ! Mat

@@ -18,7 +18,7 @@
        PetscErrorCode z
        end subroutine VecSFischer
       subroutine MatDFischer(a,b,c,d,e,f,g,h,i,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
@@ -31,7 +31,7 @@
        PetscErrorCode z
        end subroutine MatDFischer
       subroutine MatDSFischer(a,b,c,d,e,f,g,h,i,j,k,z)
-       import tMat,tVec
+       import tVec,tMat
        Mat a ! Mat
        Vec b ! Vec
        Vec c ! Vec
