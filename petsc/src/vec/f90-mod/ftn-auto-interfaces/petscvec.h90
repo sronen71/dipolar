@@ -237,7 +237,7 @@
        PetscErrorCode z
        end subroutine VecPointwiseMult
       subroutine VecSetRandom(a,b,z)
-       import tPetscRandom,tVec
+       import tVec,tPetscRandom
        Vec a ! Vec
        PetscRandom b ! PetscRandom
        PetscErrorCode z
@@ -477,7 +477,7 @@
        PetscErrorCode z
        end subroutine VecMAXPY
       subroutine VecConcatenate(a,b,c,d,z)
-       import tIS,tVec
+       import tVec,tIS
        PetscInt a ! PetscInt
        Vec b (*) ! Vec
        Vec c ! Vec
@@ -485,14 +485,14 @@
        PetscErrorCode z
        end subroutine VecConcatenate
       subroutine VecGetSubVector(a,b,c,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        IS b ! IS
        Vec c ! Vec
        PetscErrorCode z
        end subroutine VecGetSubVector
       subroutine VecRestoreSubVector(a,b,c,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        IS b ! IS
        Vec c ! Vec
@@ -829,7 +829,7 @@
        PetscErrorCode z
        end subroutine VecAbs
       subroutine VecPermute(a,b,c,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        IS b ! IS
        PetscBool c ! PetscBool
@@ -850,35 +850,35 @@
        PetscErrorCode z
        end subroutine VecUniqueEntries
       subroutine PetscSectionVecView(a,b,c,z)
-       import tVec,tPetscViewer,tPetscSection
+       import tVec,tPetscSection,tPetscViewer
        PetscSection a ! PetscSection
        Vec b ! Vec
        PetscViewer c ! PetscViewer
        PetscErrorCode z
        end subroutine PetscSectionVecView
       subroutine VecWhichEqual(a,b,c,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        Vec b ! Vec
        IS c ! IS
        PetscErrorCode z
        end subroutine VecWhichEqual
       subroutine VecWhichLessThan(a,b,c,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        Vec b ! Vec
        IS c ! IS
        PetscErrorCode z
        end subroutine VecWhichLessThan
       subroutine VecWhichGreaterThan(a,b,c,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        Vec b ! Vec
        IS c ! IS
        PetscErrorCode z
        end subroutine VecWhichGreaterThan
       subroutine VecWhichBetween(a,b,c,d,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        Vec b ! Vec
        Vec c ! Vec
@@ -886,7 +886,7 @@
        PetscErrorCode z
        end subroutine VecWhichBetween
       subroutine VecWhichBetweenOrEqual(a,b,c,d,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        Vec b ! Vec
        Vec c ! Vec
@@ -894,7 +894,7 @@
        PetscErrorCode z
        end subroutine VecWhichBetweenOrEqual
       subroutine VecWhichInactive(a,b,c,d,e,f,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        Vec b ! Vec
        Vec c ! Vec
@@ -904,7 +904,7 @@
        PetscErrorCode z
        end subroutine VecWhichInactive
       subroutine VecISAXPY(a,b,c,d,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -912,7 +912,7 @@
        PetscErrorCode z
        end subroutine VecISAXPY
       subroutine VecISCopy(a,b,c,d,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        IS b ! IS
        ScatterMode c ! ScatterMode
@@ -920,14 +920,14 @@
        PetscErrorCode z
        end subroutine VecISCopy
       subroutine ISComplementVec(a,b,c,z)
-       import tIS,tVec
+       import tVec,tIS
        IS a ! IS
        Vec b ! Vec
        IS c ! IS
        PetscErrorCode z
        end subroutine ISComplementVec
       subroutine VecISSet(a,b,c,z)
-       import tIS,tVec
+       import tVec,tIS
        Vec a ! Vec
        IS b ! IS
        PetscScalar c ! PetscScalar

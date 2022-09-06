@@ -326,7 +326,7 @@
        PetscErrorCode z
        end subroutine PCHPDDMGetSTShareSubKSP
       subroutine PCHPDDMSetDeflationMat(a,b,c,z)
-       import tIS,tPC,tMat
+       import tPC,tIS,tMat
        PC a ! PC
        IS b ! IS
        Mat c ! Mat
@@ -381,7 +381,7 @@
        PetscErrorCode z
        end subroutine PCGASMSetSortIndices
       subroutine PCGASMCreateSubdomains2D(a,b,c,d,e,f,g,h,i,j,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        PetscInt b ! PetscInt
        PetscInt c ! PetscInt
@@ -1104,7 +1104,7 @@
        PetscErrorCode z
        end subroutine PCLMVMGetMatLMVM
       subroutine PCLMVMSetIS(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
@@ -1234,7 +1234,7 @@
        PetscErrorCode z
        end subroutine PCBDDCSetDiscreteGradient
       subroutine PCBDDCSetDivergenceMat(a,b,c,d,z)
-       import tIS,tPC,tMat
+       import tPC,tIS,tMat
        PC a ! PC
        Mat b ! Mat
        PetscBool c ! PetscBool
@@ -1249,25 +1249,25 @@
        PetscErrorCode z
        end subroutine PCBDDCSetChangeOfBasisMat
       subroutine PCBDDCSetPrimalVerticesIS(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCSetPrimalVerticesIS
       subroutine PCBDDCGetPrimalVerticesIS(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCGetPrimalVerticesIS
       subroutine PCBDDCSetPrimalVerticesLocalIS(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCSetPrimalVerticesLocalIS
       subroutine PCBDDCGetPrimalVerticesLocalIS(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
@@ -1285,49 +1285,49 @@
        PetscErrorCode z
        end subroutine PCBDDCSetLevels
       subroutine PCBDDCSetDirichletBoundaries(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCSetDirichletBoundaries
       subroutine PCBDDCSetDirichletBoundariesLocal(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCSetDirichletBoundariesLocal
       subroutine PCBDDCSetNeumannBoundaries(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCSetNeumannBoundaries
       subroutine PCBDDCSetNeumannBoundariesLocal(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCSetNeumannBoundariesLocal
       subroutine PCBDDCGetDirichletBoundaries(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCGetDirichletBoundaries
       subroutine PCBDDCGetDirichletBoundariesLocal(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCGetDirichletBoundariesLocal
       subroutine PCBDDCGetNeumannBoundaries(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
        end subroutine PCBDDCGetNeumannBoundaries
       subroutine PCBDDCGetNeumannBoundariesLocal(a,b,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        IS b ! IS
        PetscErrorCode z
@@ -1342,14 +1342,14 @@
        PetscErrorCode z
        end subroutine PCBDDCSetLocalAdjacencyGraph
       subroutine PCBDDCSetDofsSplittingLocal(a,b,c,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        PetscInt b ! PetscInt
        IS c (*) ! IS
        PetscErrorCode z
        end subroutine PCBDDCSetDofsSplittingLocal
       subroutine PCBDDCSetDofsSplitting(a,b,c,z)
-       import tIS,tPC
+       import tPC,tIS
        PC a ! PC
        PetscInt b ! PetscInt
        IS c (*) ! IS
@@ -1640,7 +1640,7 @@
        PetscErrorCode z
        end subroutine PCRedundantSetNumber
       subroutine PCRedundantSetScatter(a,b,c,z)
-       import tPC,tVecScatter
+       import tVecScatter,tPC
        PC a ! PC
        VecScatter b ! VecScatter
        VecScatter c ! VecScatter

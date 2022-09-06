@@ -61,7 +61,7 @@
        PetscErrorCode z
        end subroutine SNESNASMGetSubdomains
       subroutine SNESNASMGetSubdomainVecs(a,b,c,d,e,f,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -102,13 +102,13 @@
        PetscErrorCode z
        end subroutine SNESNASMGetNumber
       subroutine SNESNASMSetWeight(a,b,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
        end subroutine SNESNASMSetWeight
       subroutine MatSNESMFGetSNES(a,b,z)
-       import tMat,tSNES
+       import tSNES,tMat
        Mat a ! Mat
        SNES b ! SNES
        PetscErrorCode z
@@ -126,7 +126,7 @@
        PetscErrorCode z
        end subroutine MatSNESMFGetReuseBase
       subroutine MatCreateSNESMF(a,b,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        Mat b ! Mat
        PetscErrorCode z
@@ -152,7 +152,7 @@
        PetscErrorCode z
        end subroutine SNESCompositeSetDamping
       subroutine SNESApplyNPC(a,b,c,d,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
@@ -160,7 +160,7 @@
        PetscErrorCode z
        end subroutine SNESApplyNPC
       subroutine SNESGetNPCFunction(a,b,c,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        PetscReal c ! PetscReal
@@ -320,7 +320,7 @@
        PetscErrorCode z
        end subroutine SNESSetCountersReset
       subroutine SNESSetKSP(a,b,z)
-       import tKSP,tSNES
+       import tSNES,tKSP
        SNES a ! SNES
        KSP b ! KSP
        PetscErrorCode z
@@ -368,28 +368,28 @@
        PetscErrorCode z
        end subroutine SNESGetSolutionNorm
       subroutine SNESComputeFunction(a,b,c,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine SNESComputeFunction
       subroutine SNESComputeMFFunction(a,b,c,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine SNESComputeMFFunction
       subroutine SNESComputeNGS(a,b,c,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine SNESComputeNGS
       subroutine SNESComputeJacobian(a,b,c,d,z)
-       import tVec,tMat,tSNES
+       import tSNES,tVec,tMat
        SNES a ! SNES
        Vec b ! Vec
        Mat c ! Mat
@@ -548,26 +548,26 @@
        PetscErrorCode z
        end subroutine SNESConvergedReasonViewFromOptions
       subroutine SNESSolve(a,b,c,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec
        PetscErrorCode z
        end subroutine SNESSolve
       subroutine SNESSetSolution(a,b,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
        end subroutine SNESSetSolution
       subroutine SNESGetSolution(a,b,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
        end subroutine SNESGetSolution
       subroutine SNESGetSolutionUpdate(a,b,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
@@ -609,19 +609,19 @@
        PetscErrorCode z
        end subroutine SNESKSPGetParametersEW
       subroutine SNESGetKSP(a,b,z)
-       import tKSP,tSNES
+       import tSNES,tKSP
        SNES a ! SNES
        KSP b ! KSP
        PetscErrorCode z
        end subroutine SNESGetKSP
       subroutine SNESSetDM(a,b,z)
-       import tDM,tSNES
+       import tSNES,tDM
        SNES a ! SNES
        DM b ! DM
        PetscErrorCode z
        end subroutine SNESSetDM
       subroutine SNESGetDM(a,b,z)
-       import tDM,tSNES
+       import tSNES,tDM
        SNES a ! SNES
        DM b ! DM
        PetscErrorCode z
@@ -687,7 +687,7 @@
        PetscErrorCode z
        end subroutine SNESMultiblockSetFields
       subroutine SNESMultiblockSetIS(a,b,c,z)
-       import tIS,tSNES
+       import tSNES,tIS
        SNES a ! SNES
        character b (*) ! char
        IS c ! IS
@@ -830,7 +830,7 @@
        PetscErrorCode z
        end subroutine SNESNCGSetType
       subroutine SNESVISetVariableBounds(a,b,c,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec

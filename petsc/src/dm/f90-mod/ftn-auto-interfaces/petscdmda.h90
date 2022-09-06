@@ -27,7 +27,7 @@
        PetscErrorCode z
        end subroutine DMDAGetLogicalCoordinate
       subroutine DMDAGetRay(a,b,c,d,e,z)
-       import tDM,tVec,tVecScatter
+       import tDM,tVecScatter,tVec
        DM a ! DM
        DMDirection b ! DMDirection
        PetscInt c ! PetscInt

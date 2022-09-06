@@ -8,6 +8,7 @@ import torch
 import constants
 import dipolar
 from perlin_noise import perlin_noise
+from system_parameters import SystemParameters
 from visualize import plot_one, plot_table
 
 EXCITATIONS = False
@@ -72,16 +73,16 @@ def main():
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    mass = 162 * constants.dalton  # 162Dy mass in kg
-    omega_x = 2 * np.pi * 125  # Trap radial frequency, in rad/s
-    aho = np.sqrt(constants.hbar / mass / omega_x)  # oscillator length in meters
-    omegas = np.array([1.0, 1.0, 2.0])  # trap frequencies in units of omega_x
-    num_atoms = 800 * 1e3  # Number of atoms 100
-    scattering_length = 89 * constants.a0
-    dipole_length = 131 * constants.a0
+    mass = SystemParameters.mass
+    omega = SystemParameters.omega
+    aho = SystemParameters.aho
+    omegas = np.array([1.0, 1.0, 2.0])  # trap frequencies in units of omega
+    num_atoms = SystemParameters.num_atoms
+    scattering_length = SystemParameters.num_atoms
+    dipole_length = SystemParameters.dipole_length
 
     lattice_constant = 1  # in units of aho
-    lattice_depth = 0.0  # in units of hbar*omegar_r
+    lattice_depth = 0.0  # in units of hbar*omegar
     lattice_type = "square"
     potential = dipolar.Potential(
         omegas,
@@ -90,14 +91,14 @@ def main():
         lattice_type,
         lattice_shift=[0.0, 0.0],
     )
-    nx = 128  #
-    nz = 96
-    limx = 15  # [aho]
-    limz = 15  # [aho]
-    Bcutoff = 15  # [aho]
+    nx = 256  #
+    nz = 128
+    limx = 20  # [aho]
+    limz = 20  # [aho]
+    Bcutoff = 20  # [aho]
     logging.info("START RUN")
     logging.info(
-        f"num_atoms {num_atoms} omega_x 2*pi*{omega_x/2/np.pi:.2f} "
+        f"num_atoms {num_atoms} omega 2*pi*{omega/2/np.pi:.2f} "
         f"omegas {omegas[0]} {omegas[1]} {omegas[2]}"
     )
     logging.info(

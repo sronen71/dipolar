@@ -827,7 +827,7 @@
        PetscErrorCode z
        end subroutine KSPGetDM
       subroutine KSPCheckSolve(a,b,c,z)
-       import tKSP,tVec,tPC
+       import tKSP,tPC,tVec
        KSP a ! KSP
        PC b ! PC
        Vec c ! Vec

@@ -67,7 +67,7 @@ class Potential:
     ):
 
         """
-        Potential energy with scaled units hbar=m=omega_x=1
+        Potential energy with scaled units hbar=m=omega=1
 
         Args:
         omegas: 3-tupple [rad/sec]
@@ -119,7 +119,7 @@ class Potential:
             y: y position
             z: z position
         Returns:
-            float: potential energy [hbar*omega_x]
+            float: potential energy [hbar*omega]
         """
         vtrap = self.trap(x, y, z)
         if self.lattice_type:
@@ -157,7 +157,7 @@ class DBEC:
     ):
         """
         Dipolar BEC
-        Units are scaled: hbar=mass=omega_x=0
+        Units are scaled: hbar=mass=omega=0
 
         Args:
         scattering_length: [aho] a_s in the literature
@@ -265,7 +265,7 @@ class DBEC:
         Args:
             psi : [nx,ny,nz], assumed to be normalized to 1
 
-        Return: chemical potential mu per atom, in hbar*omega_x units
+        Return: chemical potential mu per atom, in hbar*omega units
         """
         psi_norm = self.normalize(psi)
         psi2 = torch.abs(psi_norm) ** 2
@@ -290,7 +290,7 @@ class DBEC:
         Args:
             psi : [nx,ny,nz], assumed to be normalized to 1
 
-        Return: energy per atom, in hbar*omega_x units
+        Return: energy per atom, in hbar*omega units
         """
         psi_norm = self.normalize(psi)
         psi2 = torch.abs(psi_norm) ** 2
@@ -454,6 +454,62 @@ class DBEC:
         psi_opt = self.normalize(psi)
         psi_opt = psi_opt.detach().cpu().numpy()
         return energy, psi_opt
+
+    def mean_field_potential(self, psi):
+        external_potential = self.potential_grid
+        contact_potential = self.num_atoms * self.g * abs(psi) ** 2
+        dipole_potential = self.num_atoms * torch.fft.ifftn(
+            self.vdk * torch.fft.fftn(abs(psi) ** 2)
+        )
+        lhy_potential = self.num_atoms ** (3 / 2) * self.glhy * abs(psi) ** 3
+        return external_potential + contact_potential + dipole_potential + lhy_potential
+
+    def one_time_step(self, psi, dt):
+        """
+        Helper function for evolve
+        :param psi: takes psi0 on the gpu, evolves it in time by dt
+        :param dt: the amount of time to evolve by in units of 1/omega
+        :return: psi_dt = exp(-i H dt) psi0
+        """
+
+        # do dt/2 evolution in real space
+        psi = torch.exp(-1.0j * self.mean_field_potential(psi) * dt / 2) * psi
+        # do dt evolution in momentum space
+        psi = torch.fft.ifftn(torch.exp(-1.0j * self.k2 / 2 * dt) * torch.fft.fftn(psi))
+        # do another dt/2 evolution in real space
+        psi = torch.exp(-1.0j * self.mean_field_potential(psi) * dt / 2) * psi
+
+        return psi
+
+    def evolve(self, psi0, n, dt, record_every=10, imaginary_time=False):
+        """
+        evolve for n steps with step dt
+        :param psi0: the initial state, should be torch
+        :param list_of_times: a list of times, starting at t=0
+        :param record_every: record every this number of steps
+        :param imaginary_time: if time is imaginary, evolve in imaginary time.
+        :return: a list of times t and a list of psi(t) recorded every record_every steps
+        """
+
+        psi = psi0.clone()
+
+        # generate list for saving time slices
+        psit = np.zeros((n // record_every + 1,) + psi.shape, dtype=np.complex128)
+        psit[0, :, :, :] = psi.detach().cpu().numpy()
+        recording_times = np.zeros(n // record_every + 1)
+        recording_index = 1
+        if imaginary_time:
+            dt = -1.0j * dt
+        for i in tqdm(range(1, n)):
+            psi = self.one_time_step(psi, dt)
+            if imaginary_time:
+                psi = self.normalize(psi)
+            if i % record_every == 0:
+                recording_times[recording_index] = i * dt
+                psit[recording_index, :, :, :] = psi.detach().cpu().numpy()
+                recording_index += 1
+
+        return recording_times, psit
 
 
 class Grid:

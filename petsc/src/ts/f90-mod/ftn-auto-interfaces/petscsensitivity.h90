@@ -33,7 +33,7 @@
        PetscErrorCode z
        end subroutine TSGetCostHessianProducts
       subroutine TSAdjointSetForward(a,b,z)
-       import tMat,tTS
+       import tTS,tMat
        TS a ! TS
        Mat b ! Mat
        PetscErrorCode z
@@ -120,14 +120,14 @@
        PetscErrorCode z
        end subroutine TSForwardStep
       subroutine TSForwardSetSensitivities(a,b,c,z)
-       import tMat,tTS
+       import tTS,tMat
        TS a ! TS
        PetscInt b ! PetscInt
        Mat c ! Mat
        PetscErrorCode z
        end subroutine TSForwardSetSensitivities
       subroutine TSForwardGetSensitivities(a,b,c,z)
-       import tMat,tTS
+       import tTS,tMat
        TS a ! TS
        PetscInt b ! PetscInt
        Mat c ! Mat
@@ -139,13 +139,13 @@
        PetscErrorCode z
        end subroutine TSForwardCostIntegral
       subroutine TSForwardSetInitialSensitivities(a,b,z)
-       import tMat,tTS
+       import tTS,tMat
        TS a ! TS
        Mat b ! Mat
        PetscErrorCode z
        end subroutine TSForwardSetInitialSensitivities
       subroutine TSForwardGetStages(a,b,c,z)
-       import tMat,tTS
+       import tTS,tMat
        TS a ! TS
        PetscInt b ! PetscInt
        Mat c ! Mat
@@ -166,7 +166,7 @@
        PetscErrorCode z
        end subroutine TSGetQuadratureTS
       subroutine TSComputeSNESJacobian(a,b,c,d,z)
-       import tVec,tMat,tTS
+       import tVec,tTS,tMat
        TS a ! TS
        Vec b ! Vec
        Mat c ! Mat

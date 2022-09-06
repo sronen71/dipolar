@@ -1,4 +1,6 @@
+figs/
 results/*.pkl
 petsc/my-config/
+animation/
 .vscode/
 __pycache__/

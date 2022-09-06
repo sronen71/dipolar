@@ -91,25 +91,25 @@
        PetscErrorCode z
        end subroutine SNESFASCycleGetCorrection
       subroutine SNESFASCycleGetInterpolation(a,b,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        Mat b ! Mat
        PetscErrorCode z
        end subroutine SNESFASCycleGetInterpolation
       subroutine SNESFASCycleGetRestriction(a,b,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        Mat b ! Mat
        PetscErrorCode z
        end subroutine SNESFASCycleGetRestriction
       subroutine SNESFASCycleGetInjection(a,b,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        Mat b ! Mat
        PetscErrorCode z
        end subroutine SNESFASCycleGetInjection
       subroutine SNESFASCycleGetRScale(a,b,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
@@ -121,49 +121,49 @@
        PetscErrorCode z
        end subroutine SNESFASCycleIsFine
       subroutine SNESFASSetInterpolation(a,b,c,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        PetscInt b ! PetscInt
        Mat c ! Mat
        PetscErrorCode z
        end subroutine SNESFASSetInterpolation
       subroutine SNESFASGetInterpolation(a,b,c,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        PetscInt b ! PetscInt
        Mat c ! Mat
        PetscErrorCode z
        end subroutine SNESFASGetInterpolation
       subroutine SNESFASSetRestriction(a,b,c,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        PetscInt b ! PetscInt
        Mat c ! Mat
        PetscErrorCode z
        end subroutine SNESFASSetRestriction
       subroutine SNESFASGetRestriction(a,b,c,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        PetscInt b ! PetscInt
        Mat c ! Mat
        PetscErrorCode z
        end subroutine SNESFASGetRestriction
       subroutine SNESFASSetInjection(a,b,c,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        PetscInt b ! PetscInt
        Mat c ! Mat
        PetscErrorCode z
        end subroutine SNESFASSetInjection
       subroutine SNESFASGetInjection(a,b,c,z)
-       import tMat,tSNES
+       import tSNES,tMat
        SNES a ! SNES
        PetscInt b ! PetscInt
        Mat c ! Mat
        PetscErrorCode z
        end subroutine SNESFASGetInjection
       subroutine SNESFASSetRScale(a,b,c,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        PetscInt b ! PetscInt
        Vec c ! Vec
@@ -227,13 +227,13 @@
        PetscErrorCode z
        end subroutine SNESFASSetGalerkin
       subroutine SNESFASCreateCoarseVec(a,b,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        PetscErrorCode z
        end subroutine SNESFASCreateCoarseVec
       subroutine SNESFASRestrict(a,b,c,z)
-       import tVec,tSNES
+       import tSNES,tVec
        SNES a ! SNES
        Vec b ! Vec
        Vec c ! Vec

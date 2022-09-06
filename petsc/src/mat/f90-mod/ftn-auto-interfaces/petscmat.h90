@@ -133,13 +133,13 @@
        PetscErrorCode z
        end subroutine MatCreateSeqAIJFromTriple
       subroutine MatScatterGetVecScatter(a,b,z)
-       import tMat,tVecScatter
+       import tVecScatter,tMat
        Mat a ! Mat
        VecScatter b ! VecScatter
        PetscErrorCode z
        end subroutine MatScatterGetVecScatter
       subroutine MatScatterSetVecScatter(a,b,z)
-       import tMat,tVecScatter
+       import tVecScatter,tMat
        Mat a ! Mat
        VecScatter b ! VecScatter
        PetscErrorCode z
@@ -713,7 +713,7 @@
        PetscErrorCode z
        end subroutine MatFDColoringSetBlockSize
       subroutine MatFDColoringSetUp(a,b,c,z)
-       import tMatFDColoring,tMat,tISColoring
+       import tISColoring,tMatFDColoring,tMat
        Mat a ! Mat
        ISColoring b ! ISColoring
        MatFDColoring c ! MatFDColoring
@@ -725,7 +725,7 @@
        PetscErrorCode z
        end subroutine MatFDColoringSetFromOptions
       subroutine MatFDColoringCreate(a,b,c,z)
-       import tMatFDColoring,tMat,tISColoring
+       import tISColoring,tMatFDColoring,tMat
        Mat a ! Mat
        ISColoring b ! ISColoring
        MatFDColoring c ! MatFDColoring
@@ -1345,7 +1345,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsColumns
       subroutine MatZeroRowsColumnsIS(a,b,c,d,e,z)
-       import tIS,tVec,tMat
+       import tVec,tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -1364,7 +1364,7 @@
        PetscErrorCode z
        end subroutine MatZeroRows
       subroutine MatZeroRowsIS(a,b,c,d,e,z)
-       import tIS,tVec,tMat
+       import tVec,tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -1393,7 +1393,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsColumnsStencil
       subroutine MatZeroRowsLocalIS(a,b,c,d,e,z)
-       import tIS,tVec,tMat
+       import tVec,tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -1412,7 +1412,7 @@
        PetscErrorCode z
        end subroutine MatZeroRowsColumnsLocal
       subroutine MatZeroRowsColumnsLocalIS(a,b,c,d,e,z)
-       import tIS,tVec,tMat
+       import tVec,tIS,tMat
        Mat a ! Mat
        IS b ! IS
        PetscScalar c ! PetscScalar
@@ -1865,7 +1865,7 @@
        PetscErrorCode z
        end subroutine MatHasCongruentLayouts
       subroutine MatNullSpaceCreateRigidBody(a,b,z)
-       import tVec,tMatNullSpace
+       import tMatNullSpace,tVec
        Vec a ! Vec
        MatNullSpace b ! MatNullSpace
        PetscErrorCode z

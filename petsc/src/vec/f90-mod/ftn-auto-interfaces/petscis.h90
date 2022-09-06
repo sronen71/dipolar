@@ -353,7 +353,7 @@
        PetscErrorCode z
        end subroutine ISRestoreNonlocalIS
       subroutine ISLoad(a,b,z)
-       import tIS,tPetscViewer
+       import tPetscViewer,tIS
        IS a ! IS
        PetscViewer b ! PetscViewer
        PetscErrorCode z
