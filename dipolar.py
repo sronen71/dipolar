@@ -481,35 +481,44 @@ class DBEC:
 
         return psi
 
-    def evolve(self, psi0, n, dt, record_every=10, imaginary_time=False):
+    def evolve(self, psi0, n, dt, substeps=10, imaginary_time=False):
         """
         evolve for n steps with step dt
         :param psi0: the initial state, should be torch
         :param list_of_times: a list of times, starting at t=0
-        :param record_every: record every this number of steps
+        :param substeps: record every this number of steps
         :param imaginary_time: if time is imaginary, evolve in imaginary time.
-        :return: a list of times t and a list of psi(t) recorded every record_every steps
+        :return: a list of times t and a list of psi(t) recorded every substeps steps
         """
 
         psi = psi0.clone()
 
         # generate list for saving time slices
-        psit = np.zeros((n // record_every + 1,) + psi.shape, dtype=np.complex128)
+        psit = np.empty((n,) + psi.shape, dtype=np.complex128)
         psit[0, :, :, :] = psi.detach().cpu().numpy()
-        recording_times = np.zeros(n // record_every + 1)
+        energies = np.empty(n)
+        densities = np.empty(n)
+        energy = self.calculate_energy(psi)
+        density = torch.sum(torch.abs(psi**2)) * self.grid.dvol
+        energies[0] = energy
+        densities[0] = density
+        recording_times = np.empty(n)
         recording_index = 1
         if imaginary_time:
             dt = -1.0j * dt
-        for i in tqdm(range(1, n)):
+        for i in tqdm(range(1, n * substeps)):
             psi = self.one_time_step(psi, dt)
             if imaginary_time:
                 psi = self.normalize(psi)
-            if i % record_every == 0:
+            if i % substeps == 0:
                 recording_times[recording_index] = i * dt
+                energy = self.calculate_energy(psi)
+                density = torch.sum(torch.abs(psi**2)) * self.grid.dvol
                 psit[recording_index, :, :, :] = psi.detach().cpu().numpy()
+                energies[recording_index] = energy.item()
+                densities[recording_index] = density.item()
                 recording_index += 1
-
-        return recording_times, psit
+        return recording_times, psit, energies, densities
 
 
 class Grid:
