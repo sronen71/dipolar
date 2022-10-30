@@ -12,7 +12,7 @@ from system_parameters import SystemParameters
 from visualize import plot_one, plot_table
 
 EXCITATIONS = False
-SCAN = True
+SCAN = False
 
 
 def scan(dbec, aho, spacing_linspace=[1.0, 5.0, 6], depths_linspace=[0.1, 4.0, 6]):
@@ -62,7 +62,7 @@ def scan(dbec, aho, spacing_linspace=[1.0, 5.0, 6], depths_linspace=[0.1, 4.0, 6
 
 
 def main():
-    torch.manual_seed(3)
+    torch.manual_seed(11)
     os.makedirs("figs", exist_ok=True)
     os.makedirs("results", exist_ok=True)
     os.makedirs("logs", exist_ok=True)
@@ -72,14 +72,15 @@ def main():
         handlers=[logging.FileHandler("logs/log.log"), logging.StreamHandler()],
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-
-    mass = SystemParameters.mass
-    omega = SystemParameters.omega
-    aho = SystemParameters.aho
+    params = SystemParameters()
+    mass = params.mass
+    omega = params.omega
+    aho = params.aho
     omegas = np.array([1.0, 1.0, 2.0])  # trap frequencies in units of omega
-    num_atoms = SystemParameters.num_atoms
-    scattering_length = SystemParameters.num_atoms
-    dipole_length = SystemParameters.dipole_length
+    # omegas = np.array([1, 1, 1])
+    num_atoms = params.num_atoms
+    scattering_length = params.scattering_length
+    dipole_length = params.dipole_length
 
     lattice_constant = 1  # in units of aho
     lattice_depth = 0.0  # in units of hbar*omegar
@@ -91,11 +92,11 @@ def main():
         lattice_type,
         lattice_shift=[0.0, 0.0],
     )
-    nx = 256  #
-    nz = 128
-    limx = 20  # [aho]
-    limz = 20  # [aho]
-    Bcutoff = 20  # [aho]
+    nx = 128  #
+    nz = 64
+    limx = 16  # [aho]
+    limz = limx  # [aho]
+    Bcutoff = limx  # [aho]
     logging.info("START RUN")
     logging.info(
         f"num_atoms {num_atoms} omega 2*pi*{omega/2/np.pi:.2f} "
@@ -105,6 +106,7 @@ def main():
         f"mass {(mass/constants.dalton):.2f} "
         f"scattering_length {(scattering_length/constants.a0):.2f} "
         f"dipole_length {(dipole_length/constants.a0):.2f}  "
+        f"aho in bohr {aho/constants.a0}"
     )
     logging.info(f"nx {nx} nz {nz} limx {limx} limz {limz} Bcutoff {Bcutoff}")
     grid = dipolar.Grid(nx, nx, nz, limx, limx, limz)
@@ -123,7 +125,7 @@ def main():
         Bcutoff,
         precision=precision,
     )
-
+    # print(dipole_length / aho * num_atoms)
     if SCAN:
 
         scan(
@@ -131,18 +133,25 @@ def main():
         )  # Uncomment this to create subplot tables
     else:
         sigmas = np.array([2, 2, 2]) / np.sqrt(2)
+        # sigmas = np.array([0.2, 0.2, 2])
         noise = perlin_noise(nx, nx, nz, scale=8)  # make sure nx,nz are divisable by scale
         psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
         energy, psi_opt = dbec.optimize(psi1)
 
         print("Energy", energy)
+        file_name = (
+            f"Single1_s{dbec.scattering_length*aho/constants.a0:3.1f}_"
+            f"d{dbec.dipole_length*aho/constants.a0:3.1f}_"
+            f"n{int(dbec.num_atoms):d}"
+        )
+        np.save(file_name, psi_opt)
         plot_one(psi_opt)
 
         if EXCITATIONS:
             print("Calc excitations...")
             if precision == "float64":
                 eigenvalues, eigenvectors = dbec.calc_excitations_slepc(
-                    psi_opt, k=20, bk=300, maxiter=20000, tol=1e-6
+                    psi_opt, k=500, bk=250, maxiter=20000, tol=1e-6
                 )
 
                 logging.info(eigenvalues)

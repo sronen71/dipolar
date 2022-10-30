@@ -1,4 +1,5 @@
 figs/
+figures/
 results/*.pkl
 petsc/my-config/
 animation/

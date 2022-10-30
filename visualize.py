@@ -2,12 +2,15 @@ import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
 
-matplotlib.use("WebAgg")
+# matplotlib.use("WebAgg")
 
 
 def plot_one(psi):
+    fig, axs = plt.subplots(1, 2)
     mid_z = psi.shape[2] // 2
-    plt.imshow(np.abs(psi[:, :, mid_z] ** 2))
+    mid_y = psi.shape[1] // 2
+    axs[0].imshow(np.abs(psi[:, :, mid_z] ** 2))
+    axs[1].imshow(np.abs(psi[:, mid_y, :].transpose() ** 2))
     plt.show()
 
 

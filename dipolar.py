@@ -370,6 +370,9 @@ class DBEC:
             v0 = psi
         w, v = solve_eigensystem(A, bk, x0=v0, problem_type="HEP")
         # Calculate BdG matrix elements in basis
+        # bk = bk - 1
+        # w = w[1:]
+        # v = v[1:]
         B = PETSc.Mat().create()
         B.setSizes([2 * bk, 2 * bk])
         B.setFromOptions()
@@ -384,14 +387,20 @@ class DBEC:
             for j in range(bk):
                 d = 0
 
-                xji = torch.sum(torch.conj(vt[j]) * xi)
-                xji = torch.real(xji).item()
+                xji = torch.sum(torch.conj(vt[j]) * xi).item()
+
+                check_real = np.real(xji) - np.real_if_close(xji)
+                if check_real != 0:
+                    print("C", i, j, xji)
+                    exit()
+                xji = np.real(xji)
                 if j == i:
                     d = w[i]
                 B[j, i] = xji + d
                 B[j + bk, i + bk] = -xji - d
                 B[j, i + bk] = xji
                 B[j + bk, i] = -xji
+
         B.assemble()
         w, v = solve_eigensystem(B, k)
         return w, v
