@@ -6,8 +6,11 @@ import numpy as np
 import slepc4py
 import torch
 import torch.utils.dlpack as dlpack
+import torchvision.transforms.functional as TF
+from matplotlib import pyplot as plt
 from numpy.fft import fftfreq
 from torch.optim import LBFGS
+from torchvision.transforms import InterpolationMode
 from tqdm import tqdm
 
 slepc4py.init(sys.argv)  # it needs to come before petsc import to get options correctly
@@ -28,6 +31,27 @@ warnings.filterwarnings(
 
 if torch.cuda.is_available:
     torch.set_default_tensor_type(torch.cuda.FloatTensor)
+
+
+def rotate(psi, angle):
+    # from matplotlib import pyplot as plt
+
+    # psi11 = psi.detach().cpu().numpy()
+    psi1 = torch.transpose(psi, 0, 2)
+    psi1 = torch.transpose(psi1, 1, 2)
+    s = list(psi1.size()[1:])
+    # center = [x / 2.0 + 0.5 for x in s]
+    psi1 = TF.rotate(psi1, angle, interpolation=InterpolationMode.BILINEAR)
+    # psi1 = TF.rotate(psi1, angle)
+    psi1 = torch.transpose(psi1, 1, 2)
+    psi1 = torch.transpose(psi1, 0, 2)
+    # psi12 = psi1.detach().cpu().numpy()
+    # plt.figure()
+    # plt.imshow(psi11[:, :, 48])
+    # plt.figure()
+    # plt.imshow(psi12[:, :, 48])
+    # plt.show()
+    return psi1
 
 
 class Basis:
@@ -154,6 +178,7 @@ class DBEC:
         grid,
         Bcutoff,
         precision="float32",
+        symmetry=None,
     ):
         """
         Dipolar BEC
@@ -196,6 +221,7 @@ class DBEC:
             * scattering_length ** (3 / 2)
             * (1 + 3 / 2 * self.edd**2)
         )
+        self.symmetry = symmetry
         # self.grad = None
 
     def _make_kspace_operators(self):
@@ -215,9 +241,27 @@ class DBEC:
             torch.as_tensor(vdk, dtype=self.precision),
         )
 
-    def normalize(self, psi):
-        norm = torch.linalg.vector_norm(psi * np.sqrt(self.grid.dvol))
-        return psi / norm
+    def sym(self, psi):
+        psi_sym = psi
+        if self.symmetry == "square":
+            psi_sym = psi_sym + (
+                torch.rot90(psi, 1, (0, 1))
+                + torch.rot90(psi, 2, (0, 1))
+                + torch.rot90(psi, 3, (0, 1))
+            )
+            psi_sym = psi_sym / 4
+        elif self.symmetry == "triangular":
+            psi_sym = psi_sym + rotate(psi, 60) + rotate(psi, 120)
+            # psi_sym = psi_sym + torch.rot90(psi_sym, 2, (0, 1))
+            psi_sym = psi_sym + rotate(psi, 180) + rotate(psi, 240) + rotate(psi, 300)
+            psi_sym = psi_sym / 6
+
+        return psi_sym
+
+    def normalize_sym(self, psi):
+        psi_sym = self.sym(psi)
+        norm = torch.linalg.vector_norm(psi_sym * np.sqrt(self.grid.dvol))
+        return psi_sym / norm
 
     def kinetic_energy(self, psi):
         return (
@@ -267,7 +311,7 @@ class DBEC:
 
         Return: chemical potential mu per atom, in hbar*omega units
         """
-        psi_norm = self.normalize(psi)
+        psi_norm = self.normalize_sym(psi)
         psi2 = torch.abs(psi_norm) ** 2
         kinetic_energy = self.kinetic_energy(psi_norm)
         potential_energy = self.potential_energy(psi2)
@@ -292,9 +336,8 @@ class DBEC:
 
         Return: energy per atom, in hbar*omega units
         """
-        psi_norm = self.normalize(psi)
+        psi_norm = self.normalize_sym(psi)
         psi2 = torch.abs(psi_norm) ** 2
-        # psi2 = psi_norm**2
         kinetic_energy = self.kinetic_energy(psi_norm)
         potential_energy = self.potential_energy(psi2)
         scattering_energy = self.scattering_energy(psi2)
@@ -411,7 +454,8 @@ class DBEC:
         )
         self.k2, self.vdk = self._make_kspace_operators()
         psi = torch.as_tensor(psi, dtype=self.precision)
-        psi = self.normalize(psi)
+        psi = self.normalize_sym(psi)
+        best_psi = psi
         min_energy = self.calculate_energy(psi).item()
         calls = 0
         iterations = 50
@@ -426,22 +470,24 @@ class DBEC:
             line_search_fn="strong_wolfe",
         )
 
+        def closure():
+            nonlocal calls
+            calls += 1
+            optimizer.zero_grad()
+            loss = self.calculate_energy(psi)
+            loss.backward()
+            return loss
+
         with tqdm(range(1, iterations + 1)) as pbar:
             for i in pbar:
-
-                def closure():
-                    nonlocal calls
-                    calls += 1
-                    optimizer.zero_grad()
-                    loss = self.calculate_energy(psi)
-                    loss.backward()
-                    return loss
-
+                with torch.no_grad():
+                    psi.copy_(self.sym(psi))
                 optimizer.step(closure)
                 G = psi.grad.abs().max().item()
 
                 with torch.no_grad():
-                    norm_psi = self.normalize(torch.real(psi))
+                    # norm_psi = self.normalize_sym(torch.real(psi))
+                    norm_psi = self.normalize_sym(psi)
                     energy = self.calculate_energy(psi).item()
                     mu = self.calculate_mu(psi).item()
                     GP = self.h0_func(norm_psi) + self.c_op(norm_psi)(norm_psi) - mu * norm_psi
@@ -449,18 +495,23 @@ class DBEC:
                     dE = energy - min_energy
                 if energy < min_energy:
                     min_energy = energy
+                    best_psi = norm_psi
                 iterations_info = (
                     f"Iteration {i} Calls {calls} Energy {energy:.8f} mu {mu:.8f} "
                     f"dE {dE:.1e} Grad_max {G:.1e} GPmax {GP:.1e}"
                 )
                 pbar.set_description(iterations_info)
                 logging.info(iterations_info)
-                if abs(dE) < tol:
+                if abs(dE) < tol or dE > 0:
                     break
 
-        psi = torch.as_tensor(psi)
-        energy = self.calculate_energy(psi).detach().item()
-        psi_opt = self.normalize(psi)
+        # psi1 = norm_psi.detach().cpu().numpy()
+        # plt.figure()
+        # plt.imshow(psi1[:, :, 48])
+        # plt.show()
+        # psi = torch.as_tensor(psi)
+        energy = self.calculate_energy(best_psi).detach().item()
+        psi_opt = self.normalize_sym(best_psi)
         psi_opt = psi_opt.detach().cpu().numpy()
         return energy, psi_opt
 
@@ -518,7 +569,7 @@ class DBEC:
         for i in tqdm(range(1, n * substeps)):
             psi = self.one_time_step(psi, dt)
             if imaginary_time:
-                psi = self.normalize(psi)
+                psi = self.normalize_sym(psi)
             if i % substeps == 0:
                 recording_times[recording_index] = i * dt
                 energy = self.calculate_energy(psi)

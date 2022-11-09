@@ -12,7 +12,10 @@ from system_parameters import SystemParameters
 from visualize import plot_one, plot_table
 
 EXCITATIONS = False
-SCAN = False
+SCAN = True
+# SYMMETRY = "square"
+# SYMMETRY = None
+SYMMETRY = "triangular"
 
 
 def scan(dbec, aho, spacing_linspace=[1.0, 5.0, 6], depths_linspace=[0.1, 4.0, 6]):
@@ -56,13 +59,18 @@ def scan(dbec, aho, spacing_linspace=[1.0, 5.0, 6], depths_linspace=[0.1, 4.0, 6
             f"d{dbec.dipole_length*aho/constants.a0:3.1f}_"
             f"n{int(dbec.num_atoms):d}"
         )
+        if SYMMETRY:
+            tag = tag + f"_sym_{SYMMETRY}"
+
         pickle.dump(results, open(f"results/results_{tag}.pkl", "wb"))
         limx = dbec.grid.limx
-        plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx, tag)
+        plot_table(
+            wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx, tag, energies
+        )
 
 
 def main():
-    torch.manual_seed(11)
+    torch.manual_seed(1)
     os.makedirs("figs", exist_ok=True)
     os.makedirs("results", exist_ok=True)
     os.makedirs("logs", exist_ok=True)
@@ -82,8 +90,8 @@ def main():
     scattering_length = params.scattering_length
     dipole_length = params.dipole_length
 
-    lattice_constant = 1  # in units of aho
-    lattice_depth = 0.0  # in units of hbar*omegar
+    lattice_constant = 3  # in units of aho
+    lattice_depth = 5.0  # in units of hbar*omegar
     lattice_type = "square"
     potential = dipolar.Potential(
         omegas,
@@ -93,8 +101,8 @@ def main():
         lattice_shift=[0.0, 0.0],
     )
     nx = 128  #
-    nz = 64
-    limx = 16  # [aho]
+    nz = 96
+    limx = 14  # [aho]
     limz = limx  # [aho]
     Bcutoff = limx  # [aho]
     logging.info("START RUN")
@@ -124,16 +132,16 @@ def main():
         grid,
         Bcutoff,
         precision=precision,
+        symmetry=SYMMETRY,
     )
     # print(dipole_length / aho * num_atoms)
     if SCAN:
 
         scan(
-            dbec, aho, spacing_linspace=[1, 5, 6], depths_linspace=[0.1, 4, 6]
+            dbec, aho, spacing_linspace=[1.5, 3, 5], depths_linspace=[0, 2.5, 6]
         )  # Uncomment this to create subplot tables
     else:
-        sigmas = np.array([2, 2, 2]) / np.sqrt(2)
-        # sigmas = np.array([0.2, 0.2, 2])
+        sigmas = np.array([3, 3, 3]) / np.sqrt(2)
         noise = perlin_noise(nx, nx, nz, scale=8)  # make sure nx,nz are divisable by scale
         psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
         energy, psi_opt = dbec.optimize(psi1)

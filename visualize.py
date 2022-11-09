@@ -24,25 +24,30 @@ def plot_image(ax, xmin, xmax, out, limx):
     )
 
 
-def plot_table(wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx, tag):
+def plot_table(
+    wavefunctions, lattice_spacings, lattice_depths, aho, lattice_type, limx, tag, energies
+):
     # rows : lattice spacings
     # cols: lattice depth
 
     fig, axs = plt.subplots(
-        nrows=wavefunctions.shape[0], ncols=wavefunctions.shape[1], figsize=(50, 50)
+        nrows=wavefunctions.shape[1], ncols=wavefunctions.shape[0], figsize=(50, 50)
     )
     xmin_plot = np.where(wavefunctions > 1e-1 * wavefunctions.max())[2].min()
     xmax_plot = np.where(wavefunctions > 1e-1 * wavefunctions.max())[2].max()
     for i in range(wavefunctions.shape[0]):  # spacings
         for j in range(wavefunctions.shape[1]):  # depths
-
+            energy = energies[i, j]
             lspace = lattice_spacings[i]
             ldepth = lattice_depths[j]
             out = abs(wavefunctions[i, j]) ** 2
             ax = axs[j, i]
             plot_image(ax, xmin_plot, xmax_plot, out, limx)
+            title = ""
             if j == 0:
-                ax.set_title(f"{lspace:1.2f} $a_{{ho}}$", fontsize=70)
+                title = f"{lspace:1.2f} $a_{{ho}}$\n"
+            title += f"E={energy:.4f}"
+            ax.set_title(title, fontsize=70)
             if i == 0:
                 ax.set_ylabel(rf"{ldepth:1.2f} $\hbar \omega$", fontsize=70)
                 ax.tick_params(axis="y", labelsize=50)
