@@ -10,6 +10,7 @@ def plot_one(psi):
     mid_z = psi.shape[2] // 2
     mid_y = psi.shape[1] // 2
     axs[0].imshow(np.abs(psi[:, :, mid_z] ** 2))
+    # axs[0].text(0.5, 0.8, "Text", transform=axs[0].transAxes, color="white")
     axs[1].imshow(np.abs(psi[:, mid_y, :].transpose() ** 2))
     plt.show()
 
@@ -46,8 +47,10 @@ def plot_table(
             title = ""
             if j == 0:
                 title = f"{lspace:1.2f} $a_{{ho}}$\n"
-            title += f"E={energy:.4f}"
-            ax.set_title(title, fontsize=70)
+
+                ax.set_title(title, fontsize=70)
+            etext = f"{energy:.4f}"
+            ax.text(0.5, 0.9, etext, transform=ax.transAxes, color="white", fontsize=50)
             if i == 0:
                 ax.set_ylabel(rf"{ldepth:1.2f} $\hbar \omega$", fontsize=70)
                 ax.tick_params(axis="y", labelsize=50)

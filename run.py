@@ -4,6 +4,7 @@ import pickle
 
 import numpy as np
 import torch
+from numpy.random import default_rng
 
 import constants
 import dipolar
@@ -13,15 +14,17 @@ from visualize import plot_one, plot_table
 
 EXCITATIONS = False
 SCAN = True
-# SYMMETRY = "square"
+SYMMETRY = "square"
 # SYMMETRY = None
-SYMMETRY = "triangular"
+# SYMMETRY = "triangular"
+
+rng = default_rng(12345)
 
 
 def scan(dbec, aho, spacing_linspace=[1.0, 5.0, 6], depths_linspace=[0.1, 4.0, 6]):
     # spacing_linspace: [start,end,num] in units of aho
     # dephts_linspace: [start,end,num] in units of hbar omega
-    sigmas = np.array([2, 2, 2]) / np.sqrt(2)
+    sigmas = np.array([5, 5, 1]) / np.sqrt(2)
 
     num_spacings = spacing_linspace[2]
     num_depths = depths_linspace[2]
@@ -32,27 +35,38 @@ def scan(dbec, aho, spacing_linspace=[1.0, 5.0, 6], depths_linspace=[0.1, 4.0, 6
 
     wavefunctions = np.empty((num_spacings, num_depths) + (nx, nx, nz))
     energies = np.empty((num_spacings, num_depths))
-    for lattice_type in ["square", "triangular"]:
+    # lattice_types=["square","triangular"]
+    lattice_types = ["square"]
+    ntrials = 20
+    for lattice_type in lattice_types:
         for i, lat_spacing in enumerate(lattice_spacings):
             for j, lat_depth in enumerate(lattice_depths):
-                logging.info(
-                    f"{lattice_type} [{i},{j}]: depth {lat_depth:1.2f} "
-                    f"spacings {lat_spacing:1.2f}",
-                )
-                if lat_depth == 0 and j > 0:
-                    wavefunctions[i, j, :, :, :] = wavefunctions[0, 0, :, :, :]
-                else:
-                    dbec.potential.lattice_depth = lat_depth
-                    dbec.potential.lattice_constant = lat_spacing
-                    dbec.potential.lattice_type = lattice_type
-                    noise = perlin_noise(
-                        nx, nx, nz, scale=8
-                    )  # make sure nx,nz are divisable by scale
-                    # noise = np.random.rand(nx, nx, nz)
-                    psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
-                    energy, psi_opt = dbec.optimize(psi1)
-                    energies[i, j] = energy
-                    wavefunctions[i, j, :, :, :] = psi_opt
+                min_energy = 1e10
+                for k in range(ntrials):
+                    logging.info(
+                        f"trial {k} "
+                        f"{lattice_type} [{i},{j}]: depth {lat_depth:1.2f} "
+                        f"spacings {lat_spacing:1.2f}",
+                    )
+                    if lat_depth == 0 and j > 0:
+                        wavefunctions[i, j, :, :, :] = wavefunctions[0, 0, :, :, :]
+                    else:
+                        dbec.potential.lattice_depth = lat_depth
+                        dbec.potential.lattice_constant = lat_spacing
+                        dbec.potential.lattice_type = lattice_type
+                        scale = rng.choice([2, 4, 8])
+                        perlin = perlin_noise(
+                            nx, nx, nz, scale=scale
+                        )  # make sure nx,nz are divisable by scale
+                        noise = rng.random((nx, nx, nz))
+                        psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (
+                            1 + 0.4 * perlin + 0.1 * noise
+                        )
+                        energy, psi_opt = dbec.optimize(psi1)
+                        if energy < min_energy:
+                            min_energy = energy
+                            energies[i, j] = energy
+                            wavefunctions[i, j, :, :, :] = psi_opt
         results = {"wavefunctions": wavefunctions, "energies": energies}
         tag = (
             f"s{dbec.scattering_length*aho/constants.a0:3.1f}_"
@@ -90,8 +104,8 @@ def main():
     scattering_length = params.scattering_length
     dipole_length = params.dipole_length
 
-    lattice_constant = 3  # in units of aho
-    lattice_depth = 5.0  # in units of hbar*omegar
+    lattice_constant = 1  # in units of aho
+    lattice_depth = 0.0  # in units of hbar*omegar
     lattice_type = "square"
     potential = dipolar.Potential(
         omegas,
@@ -141,9 +155,9 @@ def main():
             dbec, aho, spacing_linspace=[1.5, 3, 5], depths_linspace=[0, 2.5, 6]
         )  # Uncomment this to create subplot tables
     else:
-        sigmas = np.array([3, 3, 3]) / np.sqrt(2)
+        sigmas = np.array([8, 8, 2]) / np.sqrt(2)
         noise = perlin_noise(nx, nx, nz, scale=8)  # make sure nx,nz are divisable by scale
-        psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.4 * noise)
+        psi1 = dipolar.gaussian_psi(dbec.grid, sigmas) * (1 + 0.7 * noise)
         energy, psi_opt = dbec.optimize(psi1)
 
         print("Energy", energy)

@@ -36,14 +36,10 @@ if torch.cuda.is_available:
 def rotate(psi, angle):
     # from matplotlib import pyplot as plt
 
-    # psi11 = psi.detach().cpu().numpy()
     psi1 = torch.transpose(psi, 0, 2)
-    psi1 = torch.transpose(psi1, 1, 2)
-    s = list(psi1.size()[1:])
-    # center = [x / 2.0 + 0.5 for x in s]
+    # psi1 = torch.transpose(psi1, 1, 2)
     psi1 = TF.rotate(psi1, angle, interpolation=InterpolationMode.BILINEAR)
-    # psi1 = TF.rotate(psi1, angle)
-    psi1 = torch.transpose(psi1, 1, 2)
+    # psi1 = torch.transpose(psi1, 1, 2)
     psi1 = torch.transpose(psi1, 0, 2)
     # psi12 = psi1.detach().cpu().numpy()
     # plt.figure()
@@ -242,20 +238,24 @@ class DBEC:
         )
 
     def sym(self, psi):
-        psi_sym = psi
         if self.symmetry == "square":
-            psi_sym = psi_sym + (
+            psi_sym = psi + (
                 torch.rot90(psi, 1, (0, 1))
                 + torch.rot90(psi, 2, (0, 1))
                 + torch.rot90(psi, 3, (0, 1))
             )
             psi_sym = psi_sym / 4
         elif self.symmetry == "triangular":
-            psi_sym = psi_sym + rotate(psi, 60) + rotate(psi, 120)
+            # psi_sym = psi + rotate(psi, 60) + rotate(psi, 120)
             # psi_sym = psi_sym + torch.rot90(psi_sym, 2, (0, 1))
-            psi_sym = psi_sym + rotate(psi, 180) + rotate(psi, 240) + rotate(psi, 300)
-            psi_sym = psi_sym / 6
+            psi1 = rotate(psi, 60)
+            psi2 = rotate(psi + psi1, 120)
+            psi3 = rotate(psi2, 120)
+            psi_sym = psi + psi1 + psi2 + psi3
 
+            psi_sym = psi_sym / 6
+        else:
+            psi_sym = psi
         return psi_sym
 
     def normalize_sym(self, psi):
