@@ -14,7 +14,7 @@ from visualize import plot_one, plot_table
 
 EXCITATIONS = False
 SCAN = True
-## SYMMETRY = "square"
+# SYMMETRY = "square"
 # SYMMETRY = None
 SYMMETRY = "triangular"
 

@@ -7,7 +7,6 @@ import slepc4py
 import torch
 import torch.utils.dlpack as dlpack
 import torchvision.transforms.functional as TF
-from matplotlib import pyplot as plt
 from numpy.fft import fftfreq
 from torch.optim import LBFGS
 from torchvision.transforms import InterpolationMode

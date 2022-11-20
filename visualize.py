@@ -1,8 +1,5 @@
-import matplotlib
 import numpy as np
 from matplotlib import pyplot as plt
-
-# matplotlib.use("WebAgg")
 
 
 def plot_one(psi):
