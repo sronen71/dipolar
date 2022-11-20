@@ -41,6 +41,7 @@ def rotate(psi, angle):
     psi1 = TF.rotate(psi1, angle, interpolation=InterpolationMode.BILINEAR)
     # psi1 = torch.transpose(psi1, 1, 2)
     psi1 = torch.transpose(psi1, 0, 2)
+    # psi11 = psi.detach().cpu().numpy()
     # psi12 = psi1.detach().cpu().numpy()
     # plt.figure()
     # plt.imshow(psi11[:, :, 48])
@@ -237,6 +238,15 @@ class DBEC:
             torch.as_tensor(vdk, dtype=self.precision),
         )
 
+    def symmetry_loss(self, psi):
+        psi_norm = self.normalize(psi)
+        if self.symmetry == "triangular":
+            diff = psi_norm - rotate(psi_norm, 60)
+            loss_sym = torch.linalg.vector_norm(diff)
+        else:
+            loss_sym = 0
+        return loss_sym
+
     def sym(self, psi):
         if self.symmetry == "square":
             psi_sym = psi + (
@@ -245,18 +255,17 @@ class DBEC:
                 + torch.rot90(psi, 3, (0, 1))
             )
             psi_sym = psi_sym / 4
-        elif self.symmetry == "triangular":
-            # psi_sym = psi + rotate(psi, 60) + rotate(psi, 120)
-            # psi_sym = psi_sym + torch.rot90(psi_sym, 2, (0, 1))
-            psi1 = rotate(psi, 60)
-            psi2 = rotate(psi + psi1, 120)
-            psi3 = rotate(psi2, 120)
-            psi_sym = psi + psi1 + psi2 + psi3
-
-            psi_sym = psi_sym / 6
+        # elif self.symmetry == "triangular":
+        # psi_sym = psi + rotate(psi, 60) + rotate(psi, -60)
+        # psi_sym = psi_sym + torch.rot90(psi_sym, 2, (0, 1))
+        # psi_sym = psi_sym / 6
         else:
             psi_sym = psi
         return psi_sym
+
+    def normalize(self, psi):
+        norm = torch.linalg.vector_norm(psi * np.sqrt(self.grid.dvol))
+        return psi / norm
 
     def normalize_sym(self, psi):
         psi_sym = self.sym(psi)
@@ -474,7 +483,7 @@ class DBEC:
             nonlocal calls
             calls += 1
             optimizer.zero_grad()
-            loss = self.calculate_energy(psi)
+            loss = self.calculate_energy(psi) + 0.1 * self.symmetry_loss(psi)
             loss.backward()
             return loss
 
@@ -489,16 +498,17 @@ class DBEC:
                     # norm_psi = self.normalize_sym(torch.real(psi))
                     norm_psi = self.normalize_sym(psi)
                     energy = self.calculate_energy(psi).item()
+                    loss_sym = self.symmetry_loss(psi)
                     mu = self.calculate_mu(psi).item()
                     GP = self.h0_func(norm_psi) + self.c_op(norm_psi)(norm_psi) - mu * norm_psi
                     GP = GP.abs().max().item()
                     dE = energy - min_energy
                 if energy < min_energy:
                     min_energy = energy
-                    best_psi = norm_psi
+                    best_psi = psi
                 iterations_info = (
                     f"Iteration {i} Calls {calls} Energy {energy:.8f} mu {mu:.8f} "
-                    f"dE {dE:.1e} Grad_max {G:.1e} GPmax {GP:.1e}"
+                    f"dE {dE:.1e} Grad_max {G:.1e} GPmax {GP:.1e} Symmtery loss {loss_sym:.8f}"
                 )
                 pbar.set_description(iterations_info)
                 logging.info(iterations_info)
@@ -511,7 +521,7 @@ class DBEC:
         # plt.show()
         # psi = torch.as_tensor(psi)
         energy = self.calculate_energy(best_psi).detach().item()
-        psi_opt = self.normalize_sym(best_psi)
+        psi_opt = self.normalize_sym(best_psi)  # explicitly symmetrize in the end
         psi_opt = psi_opt.detach().cpu().numpy()
         return energy, psi_opt
 
